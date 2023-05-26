@@ -33,5 +33,15 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.Countries.Where(c => c.Name.ToLower().Contains(name.ToLower())).ToList();
         }
+
+        public List<Country> GetAll(int page, int limit)
+        {
+            return _dbContext.Countries.OrderBy(c => c.Name).Skip((page - 1) * limit).Take(limit).ToList();
+        }
+
+        public int GetTotalCount()
+        {
+            return _dbContext.Countries.Count();
+        }
     }
 }

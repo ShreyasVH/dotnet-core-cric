@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Com.Dotnet.Cric.Data;
-using Com.Dotnet.Cric.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Reflection;
+using Microsoft.OpenApi.Models;
 
+using Com.Dotnet.Cric.Data;
+using Com.Dotnet.Cric.Exceptions;
 
 public class Program
 {
@@ -27,7 +28,10 @@ public class Program
                     });
 
                     services.AddEndpointsApiExplorer();
-                    services.AddSwaggerGen();
+                    services.AddSwaggerGen(c =>
+                    {
+                        c.SwaggerDoc("v1", new OpenApiInfo { Title = "dotnet-cric", Version = "1.0" });
+                    });
 
                     services.AddCors(options =>
                     {

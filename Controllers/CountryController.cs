@@ -34,5 +34,20 @@ namespace Com.Dotnet.Cric.Controllers
             var countryResponses = countries.Select(country => new CountryResponse(country)).ToList();
             return Ok(new Response(countryResponses));
         }
+
+        [HttpGet]
+        [Route("/cric/v1/countries")]
+        public IActionResult GetAll(int page, int limit)
+        {
+            var countries = countryService.GetAll(page, limit);
+            var countryResponses = countries.Select(country => new CountryResponse(country)).ToList();
+            var totalCount = 0;
+            if(page == 1)
+            {
+                totalCount = countryService.GetTotalCount();
+            }
+
+            return Ok(new Response(new PaginatedResponse<CountryResponse>(totalCount, countryResponses, page, limit)));
+        }
     }
 }

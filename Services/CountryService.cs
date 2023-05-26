@@ -31,5 +31,15 @@ namespace Com.Dotnet.Cric.Services
 		{
 			return countryRepository.GetByNamePattern(name);
 		}
+
+		public List<Country> GetAll(int page, int limit)
+		{
+			return countryRepository.GetAll(page, limit);
+		}
+
+		public int GetTotalCount()
+		{
+			return countryRepository.GetTotalCount();
+		}
 	}
 }
