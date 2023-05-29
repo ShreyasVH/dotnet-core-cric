@@ -46,5 +46,10 @@ namespace Com.Dotnet.Cric.Services
 		{
 			return countryRepository.GetById(id);
 		}
+
+		public List<Country> FindByIds(List<long> ids)
+		{
+			return countryRepository.GetByIds(ids);
+		}
 	}
 }
