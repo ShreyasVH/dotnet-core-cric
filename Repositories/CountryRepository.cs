@@ -43,5 +43,10 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.Countries.Count();
         }
+
+        public Country GetById(long id)
+        {
+            return _dbContext.Countries.Find(id);
+        }
     }
 }
