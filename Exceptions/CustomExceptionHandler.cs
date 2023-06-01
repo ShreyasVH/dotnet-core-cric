@@ -10,7 +10,6 @@ namespace Com.Dotnet.Cric.Exceptions
         {
             if (context.Exception is MyException exception)
             {
-                Console.WriteLine(exception.Description);
                 var response = new Response(exception.Description);
                 context.Result = new ObjectResult(response)
                 {

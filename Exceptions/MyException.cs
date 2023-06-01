@@ -9,12 +9,11 @@ namespace Com.Dotnet.Cric.Exceptions
 
 		public MyException()
 		{
-			Console.WriteLine("Empty MyException");
+			
 		}
 
 		public MyException(string description)
 		{
-			Console.WriteLine("String MyException");
 			Description = description;
 		}
 	}
