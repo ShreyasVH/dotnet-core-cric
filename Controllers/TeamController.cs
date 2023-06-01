@@ -42,5 +42,27 @@ namespace Com.Dotnet.Cric.Controllers
             var teamResponse = new TeamResponse(team, new CountryResponse(country), new TeamTypeResponse(teamType));
             return Created("", new Response(teamResponse));
         }
+
+        [HttpGet]
+        [Route("/cric/v1/teams")]
+        public IActionResult GetAll(int page, int limit)
+        {
+            var teams = teamService.GetAll(page, limit);
+            var countryIds = teams.Select(t => t.CountryId).ToList();
+            var countries = countryService.FindByIds(countryIds);
+            var countryMap = countries.ToDictionary(c => c.Id, c => c);
+            var teamTypeIds = teams.Select(t => t.TypeId).ToList();
+            var teamTypes = teamTypeService.FindByIds(teamTypeIds);
+            var teamTypeMap = teamTypes.ToDictionary(tt => tt.Id, tt => tt);
+
+            var teamResponses = teams.Select(team => new TeamResponse(team, new CountryResponse(countryMap[team.CountryId]), new TeamTypeResponse(teamTypeMap[team.TypeId]))).ToList();
+            var totalCount = 0;
+            if (page == 1)
+            {
+                totalCount = teamService.GetTotalCount();
+            }
+
+            return Ok(new Response(new PaginatedResponse<TeamResponse>(totalCount, teamResponses, page, limit)));
+        }
     }
 }

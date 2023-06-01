@@ -26,7 +26,17 @@ namespace Com.Dotnet.Cric.Repositories
 
         public Team GetByNameAndCountryIdAndTypeId(string name, long countryId, int typeId)
         {
-            return _dbContext.Teams.FirstOrDefault(c => c.Name == name && c.CountryId == countryId && c.TypeId == typeId);
+            return _dbContext.Teams.FirstOrDefault(t => t.Name == name && t.CountryId == countryId && t.TypeId == typeId);
+        }
+
+        public List<Team> GetAll(int page, int limit)
+        {
+            return _dbContext.Teams.OrderBy(t => t.Name).Skip((page - 1) * limit).Take(limit).ToList();
+        }
+
+        public int GetTotalCount()
+        {
+            return _dbContext.Teams.Count();
         }
     }
 }

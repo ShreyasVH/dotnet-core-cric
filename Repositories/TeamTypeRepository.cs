@@ -19,5 +19,10 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.TeamTypes.Find(id);
         }
+
+        public List<TeamType> GetByIds(List<int> ids)
+        {
+            return _dbContext.TeamTypes.Where( tt => ids.Contains(tt.Id)).ToList();
+        }
     }
 }

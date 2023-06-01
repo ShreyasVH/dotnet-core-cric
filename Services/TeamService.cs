@@ -26,5 +26,15 @@ namespace Com.Dotnet.Cric.Services
 
 			return teamRepository.Create(createRequest);
 		}
+
+		public List<Team> GetAll(int page, int limit)
+		{
+			return teamRepository.GetAll(page, limit);
+		}
+
+		public int GetTotalCount()
+		{
+			return teamRepository.GetTotalCount();
+		}
 	}
 }
