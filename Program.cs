@@ -6,6 +6,10 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Builder;
+using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using Com.Dotnet.Cric.Data;
 using Com.Dotnet.Cric.Exceptions;
@@ -24,8 +28,12 @@ public class Program
                 webBuilder.ConfigureServices((hostContext, services) =>
                 {
                     services.AddControllers(options => {
-                        options.Filters.Add<CustomExceptionHandler>(); // Register the global exception handler
-                    });
+                        options.Filters.Add<CustomExceptionHandler>();
+                    })
+                    .AddJsonOptions(options =>
+                    {
+                        options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
+                    }); ;
 
                     services.AddEndpointsApiExplorer();
                     services.AddSwaggerGen(c =>
@@ -89,5 +97,20 @@ public class Program
     private static string GetPortFromEnvironment()
     {
         return Environment.GetEnvironmentVariable("PORT") ?? "";
+    }
+}
+
+public class DateTimeConverter : JsonConverter<DateTime>
+{
+    private const string DateFormat = "yyyy-MM-dd HH:mm:ss";
+
+    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        return DateTime.ParseExact(reader.GetString(), DateFormat, CultureInfo.InvariantCulture);
+    }
+
+    public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.ToString(DateFormat));
     }
 }

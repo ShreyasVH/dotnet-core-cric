@@ -16,6 +16,8 @@ namespace Com.Dotnet.Cric.Data
         public DbSet<TeamType> TeamTypes { get; set; }
         public DbSet<Team> Teams { get; set;  }
 
+        public DbSet<Tour> Tours { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Configure any additional model-related settings or relationships here
@@ -62,6 +64,10 @@ namespace Com.Dotnet.Cric.Data
             modelBuilder.Entity<Team>()
                 .HasIndex(s => s.CountryId)
                 .HasName("country");
+
+            modelBuilder.Entity<Tour>()
+               .HasIndex(t => new { t.Name, t.StartTime })
+               .IsUnique();
 
             base.OnModelCreating(modelBuilder);
         }
