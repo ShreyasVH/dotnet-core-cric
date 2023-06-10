@@ -8,3 +8,10 @@ export MSSQL_PORT=
 export MSSQL_DB=
 export MSSQL_USER=
 export MSSQL_PASSWORD=
+
+export ALLOWED_ORIGINS=
+
+# dotnet-ef path
+export PATH=
+
+export DOTNET_ROOT=
