@@ -1,3 +1,5 @@
+using System;
+
 namespace Com.Dotnet.Cric.Responses
 {
     public class Response
