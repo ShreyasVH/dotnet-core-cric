@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 
 using Com.Dotnet.Cric.Requests.Players;
@@ -32,6 +33,25 @@ namespace Com.Dotnet.Cric.Controllers
             var player = playerService.Create(createRequest);
             var playerResponse = new PlayerResponse(player, new CountryResponse(country));
             return Created("", new Response(playerResponse));
+        }
+        
+        [HttpGet]
+        [Route("/cric/v1/players")]
+        public IActionResult GetAll(int page, int limit)
+        {
+            var players = playerService.GetAll(page, limit);
+            var countryIds = players.Select(t => t.CountryId).ToList();
+            var countries = countryService.FindByIds(countryIds);
+            var countryMap = countries.ToDictionary(c => c.Id, c => c);
+
+            var playerResponses = players.Select(player => new PlayerResponse(player, new CountryResponse(countryMap[player.CountryId]))).ToList();
+            var totalCount = 0;
+            if (page == 1)
+            {
+                totalCount = playerService.GetTotalCount();
+            }
+
+            return Ok(new Response(new PaginatedResponse<PlayerResponse>(totalCount, playerResponses, page, limit)));
         }
     }
 }

@@ -29,5 +29,15 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.Players.FirstOrDefault(p => p.Name == name && p.CountryId == countryId && p.DateOfBirth == dateOfBirth);
         }
+        
+        public List<Player> GetAll(int page, int limit)
+        {
+            return _dbContext.Players.OrderBy(t => t.Name).Skip((page - 1) * limit).Take(limit).ToList();
+        }
+
+        public int GetTotalCount()
+        {
+            return _dbContext.Players.Count();
+        }
     }
 }

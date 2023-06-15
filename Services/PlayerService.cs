@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Com.Dotnet.Cric.Repositories;
 using Com.Dotnet.Cric.Models;
 using Com.Dotnet.Cric.Requests.Players;
@@ -25,6 +26,16 @@ namespace Com.Dotnet.Cric.Services
             }
 
             return playerRepository.Create(createRequest);
+        }
+        
+        public List<Player> GetAll(int page, int limit)
+        {
+            return playerRepository.GetAll(page, limit);
+        }
+
+        public int GetTotalCount()
+        {
+            return playerRepository.GetTotalCount();
         }
     }
 }
