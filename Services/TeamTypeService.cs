@@ -1,4 +1,5 @@
-﻿using Com.Dotnet.Cric.Repositories;
+﻿using System.Collections.Generic;
+using Com.Dotnet.Cric.Repositories;
 using Com.Dotnet.Cric.Models;
 
 namespace Com.Dotnet.Cric.Services

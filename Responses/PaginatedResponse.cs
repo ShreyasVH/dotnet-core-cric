@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Com.Dotnet.Cric.Responses
 {
 	class PaginatedResponse<T>

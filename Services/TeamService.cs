@@ -1,4 +1,5 @@
-﻿using Com.Dotnet.Cric.Repositories;
+﻿using System.Collections.Generic;
+using Com.Dotnet.Cric.Repositories;
 using Com.Dotnet.Cric.Models;
 using Com.Dotnet.Cric.Requests.Teams;
 using Com.Dotnet.Cric.Exceptions;
@@ -35,6 +36,11 @@ namespace Com.Dotnet.Cric.Services
 		public int GetTotalCount()
 		{
 			return teamRepository.GetTotalCount();
+		}
+
+		public List<Team> GetByIds(List<long> ids)
+		{
+			return teamRepository.GetByIds(ids);
 		}
 	}
 }

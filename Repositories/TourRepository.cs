@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Com.Dotnet.Cric.Data;
@@ -27,6 +28,11 @@ namespace Com.Dotnet.Cric.Repositories
         public Tour GetByNameAndStartTime(string name, DateTime startTime)
         {
             return _dbContext.Tours.FirstOrDefault(c => c.Name == name && c.StartTime.Equals(startTime));
+        }
+        
+        public Tour GetById(long id)
+        {
+            return _dbContext.Tours.Find(id);
         }
     }
 }

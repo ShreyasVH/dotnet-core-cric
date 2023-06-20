@@ -1,6 +1,6 @@
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 
-using Com.Dotnet.Cric.Models;
 using Com.Dotnet.Cric.Requests.Countries;
 using Com.Dotnet.Cric.Responses;
 using Com.Dotnet.Cric.Services;

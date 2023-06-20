@@ -22,6 +22,11 @@ namespace Com.Dotnet.Cric.Data
         
         public DbSet<Player> Players { get; set; }
 
+        public DbSet<Series> Series { get; set; }
+        public DbSet<SeriesType> SeriesTypes { get; set; }
+        public DbSet<GameType> GameTypes { get; set; }
+        public DbSet<SeriesTeamsMap> SeriesTeamsMap { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Configure any additional model-related settings or relationships here
@@ -43,7 +48,7 @@ namespace Com.Dotnet.Cric.Data
 
             modelBuilder.Entity<Stadium>()
                 .HasIndex(s => s.CountryId)
-                .HasName("country");
+                .HasDatabaseName("country");
 
             modelBuilder.Entity<TeamType>()
                 .HasIndex(tt => new { tt.Name })
@@ -67,7 +72,7 @@ namespace Com.Dotnet.Cric.Data
 
             modelBuilder.Entity<Team>()
                 .HasIndex(s => s.CountryId)
-                .HasName("country");
+                .HasDatabaseName("country");
 
             modelBuilder.Entity<Tour>()
                .HasIndex(t => new { t.Name, t.StartTime })
@@ -94,6 +99,82 @@ namespace Com.Dotnet.Cric.Data
             modelBuilder.Entity<Player>()
                 .HasIndex(p => p.CountryId)
                 .HasDatabaseName("country");
+            
+            modelBuilder.Entity<SeriesType>()
+                .HasIndex(st => new { st.Name })
+                .IsUnique();
+            
+            modelBuilder.Entity<GameType>()
+                .HasIndex(gt => new { gt.Name })
+                .IsUnique();
+
+            modelBuilder.Entity<Series>()
+                .HasOne(s => s.HomeCountry)
+                .WithMany()
+                .HasForeignKey(s => s.HomeCountryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Series>()
+                .HasOne(s => s.Tour)
+                .WithMany()
+                .HasForeignKey(s => s.TourId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Series>()
+                .HasOne(s => s.Type)
+                .WithMany()
+                .HasForeignKey(s => s.TypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Series>()
+                .HasOne(s => s.GameType)
+                .WithMany()
+                .HasForeignKey(s => s.GameTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Series>()
+                .HasIndex(t => new { t.Name, t.TourId, t.GameTypeId })
+                .IsUnique();
+
+            modelBuilder.Entity<Series>()
+                .HasIndex(s => s.HomeCountryId)
+                .HasDatabaseName("HomeCountry");
+            
+            modelBuilder.Entity<Series>()
+                .HasIndex(s => s.TourId)
+                .HasDatabaseName("Tour");
+            
+            modelBuilder.Entity<Series>()
+                .HasIndex(s => s.TypeId)
+                .HasDatabaseName("Type");
+            
+            modelBuilder.Entity<Series>()
+                .HasIndex(s => s.GameTypeId)
+                .HasDatabaseName("GameType");
+            
+            modelBuilder.Entity<SeriesTeamsMap>()
+                .HasOne(s => s.Series)
+                .WithMany()
+                .HasForeignKey(s => s.SeriesId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SeriesTeamsMap>()
+                .HasOne(s => s.Team)
+                .WithMany()
+                .HasForeignKey(s => s.TeamId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SeriesTeamsMap>()
+                .HasIndex(s => new { s.SeriesId, s.TeamId })
+                .IsUnique();
+
+            modelBuilder.Entity<SeriesTeamsMap>()
+                .HasIndex(s => s.SeriesId)
+                .HasDatabaseName("Series");
+            
+            modelBuilder.Entity<SeriesTeamsMap>()
+                .HasIndex(s => s.TeamId)
+                .HasDatabaseName("Team");
 
             base.OnModelCreating(modelBuilder);
         }

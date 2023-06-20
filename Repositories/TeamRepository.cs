@@ -38,5 +38,10 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.Teams.Count();
         }
+
+        public List<Team> GetByIds(List<long> ids)
+        {
+            return _dbContext.Teams.Where(t => ids.Contains(t.Id)).ToList();
+        }
     }
 }

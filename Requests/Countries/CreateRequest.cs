@@ -1,3 +1,4 @@
+using System;
 using Com.Dotnet.Cric.Exceptions;
 
 namespace Com.Dotnet.Cric.Requests.Countries

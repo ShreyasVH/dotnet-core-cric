@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 
 using Com.Dotnet.Cric.Models;
 using Com.Dotnet.Cric.Requests.Stadiums;

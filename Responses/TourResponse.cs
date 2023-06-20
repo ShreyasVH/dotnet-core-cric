@@ -1,4 +1,5 @@
-﻿using Com.Dotnet.Cric.Models;
+﻿using System;
+using Com.Dotnet.Cric.Models;
 
 namespace Com.Dotnet.Cric.Responses
 {

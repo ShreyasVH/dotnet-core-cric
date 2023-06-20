@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
 
 using Com.Dotnet.Cric.Requests.Tours;

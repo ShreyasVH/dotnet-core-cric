@@ -26,5 +26,10 @@ namespace Com.Dotnet.Cric.Services
 
 			return tourRepository.Create(createRequest);
 		}
+
+		public Tour GetById(long id)
+		{
+			return tourRepository.GetById(id);
+		}
 	}
 }
