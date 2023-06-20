@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Com.Dotnet.Cric.Models;
 using Com.Dotnet.Cric.Repositories;
 
 namespace Com.Dotnet.Cric.Services
@@ -15,6 +16,11 @@ namespace Com.Dotnet.Cric.Services
         public void Add(long seriesId, List<long> teamIds)
         {
             seriesTeamsMapRepository.Add(seriesId, teamIds);
+        }
+
+        public List<SeriesTeamsMap> GetBySeriesIds(List<long> seriesIds)
+        {
+            return seriesTeamsMapRepository.GetBySeriesIds(seriesIds);
         }
     }
 }

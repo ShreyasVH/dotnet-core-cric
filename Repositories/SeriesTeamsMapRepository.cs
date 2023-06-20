@@ -20,5 +20,10 @@ namespace Com.Dotnet.Cric.Repositories
             _dbContext.SeriesTeamsMap.AddRange(seriesTeamsMaps);
             _dbContext.SaveChanges();
         }
+
+        public List<SeriesTeamsMap> GetBySeriesIds(List<long> seriesIds)
+        {
+            return _dbContext.SeriesTeamsMap.Where(seriesTeamsMap => seriesIds.Contains(seriesTeamsMap.SeriesId)).ToList();
+        }
     }
 }

@@ -17,5 +17,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return seriesTypeRepository.GetById(id);
         }
+        
+        public List<SeriesType> FindByIds(List<int> ids)
+        {
+            return seriesTypeRepository.GetByIds(ids);
+        }
     }
 }

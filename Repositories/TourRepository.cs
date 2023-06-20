@@ -34,5 +34,10 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.Tours.Find(id);
         }
+        
+        public List<Tour> GetByIds(List<long> ids)
+        {
+            return _dbContext.Tours.Where(tour => ids.Contains(tour.Id)).ToList();
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Com.Dotnet.Cric.Repositories;
+﻿using System.Collections.Generic;
+using Com.Dotnet.Cric.Repositories;
 using Com.Dotnet.Cric.Models;
 using Com.Dotnet.Cric.Requests.Tours;
 using Com.Dotnet.Cric.Exceptions;
@@ -30,6 +31,11 @@ namespace Com.Dotnet.Cric.Services
 		public Tour GetById(long id)
 		{
 			return tourRepository.GetById(id);
+		}
+		
+		public List<Tour> GetByIds(List<long> ids)
+		{
+			return tourRepository.GetByIds(ids);
 		}
 	}
 }
