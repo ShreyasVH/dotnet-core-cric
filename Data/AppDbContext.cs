@@ -26,6 +26,7 @@ namespace Com.Dotnet.Cric.Data
         public DbSet<SeriesType> SeriesTypes { get; set; }
         public DbSet<GameType> GameTypes { get; set; }
         public DbSet<SeriesTeamsMap> SeriesTeamsMap { get; set; }
+        public DbSet<ManOfTheSeries> ManOfTheSeries { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -175,6 +176,30 @@ namespace Com.Dotnet.Cric.Data
             modelBuilder.Entity<SeriesTeamsMap>()
                 .HasIndex(s => s.TeamId)
                 .HasDatabaseName("Team");
+            
+            modelBuilder.Entity<ManOfTheSeries>()
+                .HasOne(m => m.Series)
+                .WithMany()
+                .HasForeignKey(m => m.SeriesId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ManOfTheSeries>()
+                .HasOne(m => m.Player)
+                .WithMany()
+                .HasForeignKey(m => m.PlayerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ManOfTheSeries>()
+                .HasIndex(m => new { m.SeriesId, m.PlayerId })
+                .IsUnique();
+
+            modelBuilder.Entity<ManOfTheSeries>()
+                .HasIndex(m => m.SeriesId)
+                .HasDatabaseName("Series");
+            
+            modelBuilder.Entity<ManOfTheSeries>()
+                .HasIndex(m => m.PlayerId)
+                .HasDatabaseName("Player");
 
             base.OnModelCreating(modelBuilder);
         }

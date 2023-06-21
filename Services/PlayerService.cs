@@ -37,5 +37,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return playerRepository.GetTotalCount();
         }
+
+        public List<Player> GetByIds(List<long> ids)
+        {
+            return playerRepository.GetByIds(ids);
+        }
     }
 }

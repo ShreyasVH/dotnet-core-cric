@@ -38,5 +38,15 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.Series.Count();
         }
+
+        public Series GetById(long id)
+        {
+            return _dbContext.Series.Find(id);
+        }
+
+        public void Update(Series series)
+        {
+            _dbContext.SaveChanges();
+        }
     }
 }

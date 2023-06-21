@@ -22,5 +22,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return seriesTeamsMapRepository.GetBySeriesIds(seriesIds);
         }
+
+        public void Remove(long seriesId, List<long> teamIds)
+        {
+            seriesTeamsMapRepository.Remove(seriesId, teamIds);
+        }
     }
 }

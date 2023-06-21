@@ -13,6 +13,7 @@ namespace Com.Dotnet.Cric.Requests.Series
         public int GameTypeId { get; set; }
         public DateTime? StartTime { get; set; }
         public List<long> Teams { get; set; }
+        public List<long> ManOfTheSeriesList { get; set; }
 
         public void Validate()
         {

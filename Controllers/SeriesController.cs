@@ -23,8 +23,10 @@ namespace Com.Dotnet.Cric.Controllers
         private readonly TeamService teamService;
         private readonly TeamTypeService teamTypeService;
         private readonly SeriesTeamsMapService seriesTeamsMapService;
+        private readonly ManOfTheSeriesService _manOfTheSeriesService;
+        private readonly PlayerService _playerService;
 
-        public SeriesController(SeriesService seriesService, CountryService countryService, SeriesTypeService seriesTypeService, GameTypeService gameTypeService, TourService tourService, TeamService teamService, TeamTypeService teamTypeService, SeriesTeamsMapService seriesTeamsMapService)
+        public SeriesController(SeriesService seriesService, CountryService countryService, SeriesTypeService seriesTypeService, GameTypeService gameTypeService, TourService tourService, TeamService teamService, TeamTypeService teamTypeService, SeriesTeamsMapService seriesTeamsMapService, ManOfTheSeriesService manOfTheSeriesService, PlayerService playerService)
         {
             this.seriesService = seriesService;
             this.countryService = countryService;
@@ -34,6 +36,8 @@ namespace Com.Dotnet.Cric.Controllers
             this.teamService = teamService;
             this.teamTypeService = teamTypeService;
             this.seriesTeamsMapService = seriesTeamsMapService;
+            this._manOfTheSeriesService = manOfTheSeriesService;
+            this._playerService = playerService;
         }
 
         [HttpPost]
@@ -94,7 +98,7 @@ namespace Com.Dotnet.Cric.Controllers
             List<TeamType> teamTypes = teamTypeService.FindByIds(teamTypeIds);
             Dictionary<int, TeamType> teamTypeMap = teamTypes.ToDictionary(teamType => teamType.Id, teamType => teamType);
             List<TeamResponse> teamResponses = teams.Select(team => new TeamResponse(team, new CountryResponse(countryMap[team.CountryId]), new TeamTypeResponse(teamTypeMap[team.TypeId]))).ToList();
-            var seriesResponse = new SeriesResponse(series, new CountryResponse(country), new TourResponse(tour), new SeriesTypeResponse(seriesType), new GameTypeResponse(gameType), teamResponses);
+            var seriesResponse = new SeriesResponse(series, new CountryResponse(country), new TourResponse(tour), new SeriesTypeResponse(seriesType), new GameTypeResponse(gameType), teamResponses, new List<PlayerResponse>());
             return Created("", new Response(seriesResponse));
         }
         
@@ -142,6 +146,12 @@ namespace Com.Dotnet.Cric.Controllers
                 countryIds.Add(team.CountryId);
             }
 
+            var manOfTheSeriesList = _manOfTheSeriesService.GetBySeriesIds(seriesIds);
+            var playerIds = manOfTheSeriesList.Select(mots => mots.PlayerId).ToList();
+            var players = _playerService.GetByIds(playerIds);
+            var playerCountryIds = players.Select(player => player.CountryId).ToList();
+            countryIds.AddRange(playerCountryIds);
+
             var countries = countryService.FindByIds(countryIds);
             var countryMap = countries.ToDictionary(c => c.Id, c => c);
             
@@ -152,10 +162,146 @@ namespace Com.Dotnet.Cric.Controllers
             var tourMap = tours.ToDictionary(tour => tour.Id, tour => tour);
 
             var teamResponses = teams.Select(team => new TeamResponse(team, new CountryResponse(countryMap[team.CountryId]), new TeamTypeResponse(teamTypeMap[team.TypeId]))).ToList();
-
-            var seriesResponses = seriesList.Select(series => new SeriesResponse(series, new CountryResponse(countryMap[series.HomeCountryId]), new TourResponse(tourMap[series.TourId]), new SeriesTypeResponse(seriesTypeMap[series.TypeId]), new GameTypeResponse(gameTypeMap[series.GameTypeId]), teamResponses)).ToList();
+            var playerResponses = players.Select(player => new PlayerResponse(player, new CountryResponse(countryMap[player.CountryId]))).ToList();
+            
+            var seriesResponses = seriesList.Select(series => new SeriesResponse(series, new CountryResponse(countryMap[series.HomeCountryId]), new TourResponse(tourMap[series.TourId]), new SeriesTypeResponse(seriesTypeMap[series.TypeId]), new GameTypeResponse(gameTypeMap[series.GameTypeId]), teamResponses, playerResponses)).ToList();
 
             return Ok(new Response(new PaginatedResponse<SeriesResponse>(totalCount, seriesResponses, page, limit)));
+        }
+
+        [HttpPut]
+        [Route("/cric/v1/series/{id:long}")]
+        public IActionResult Create(long id, UpdateRequest updateRequest)
+        {
+            var existingSeries = seriesService.GetById(id);
+            if (null == existingSeries)
+            {
+                throw new NotFoundException("Series");
+            }
+
+            var teamsToDelete = new List<long>();
+            var teamsToAdd = new List<long>();
+            var manOfTheSeriesToDelete = new List<long>();
+            var manOfTheSeriesToAdd = new List<long>();
+            List<Team> teams;
+            var seriesTeamsMaps = seriesTeamsMapService.GetBySeriesIds(new List<long> {id});
+            var existingTeamIds = new List<long>();
+            foreach (var seriesTeamsMap in seriesTeamsMaps)
+            {
+                existingTeamIds.Add(seriesTeamsMap.TeamId);
+                if (null != updateRequest.Teams && !updateRequest.Teams.Contains(seriesTeamsMap.TeamId))
+                {
+                    teamsToDelete.Add(seriesTeamsMap.TeamId);
+                }
+            }
+
+            if (null != updateRequest.Teams)
+            {
+                teams = teamService.GetByIds(updateRequest.Teams);
+                if (teams.Count != updateRequest.Teams.Distinct().Count())
+                {
+                    throw new NotFoundException("Team");
+                }
+
+                teamsToAdd = updateRequest.Teams.Where(teamId => !existingTeamIds.Contains(teamId)).ToList();
+            }
+            else
+            {
+                teams = teamService.GetByIds(existingTeamIds);
+            }
+
+            var teamTypeIds = new List<int>();
+            var countryIds = new List<long>();
+            foreach (var team in teams)
+            {
+                teamTypeIds.Add(team.TypeId);
+                countryIds.Add(team.CountryId);
+            }
+
+            countryIds.Add(updateRequest.HomeCountryId ?? existingSeries.HomeCountryId);
+
+            List<Player> players;
+            var manOfTheSeriesList = _manOfTheSeriesService.GetBySeriesIds(new List<long> {id});
+            var existingPlayerIds = new List<long>();
+            foreach (var manOfTheSeries in manOfTheSeriesList)
+            {
+                existingPlayerIds.Add(manOfTheSeries.PlayerId);
+                if (null != updateRequest.ManOfTheSeriesList && !updateRequest.ManOfTheSeriesList.Contains(manOfTheSeries.PlayerId))
+                {
+                    manOfTheSeriesToDelete.Add(manOfTheSeries.PlayerId);
+                }
+            }
+
+            if (null != updateRequest.ManOfTheSeriesList)
+            {
+                players = _playerService.GetByIds(updateRequest.ManOfTheSeriesList);
+                if (players.Count != updateRequest.ManOfTheSeriesList.Distinct().Count())
+                {
+                    throw new NotFoundException("Player");
+                }
+
+                manOfTheSeriesToAdd = updateRequest.ManOfTheSeriesList.Where(playerId => !existingPlayerIds.Contains(playerId)).ToList();
+            }
+            else
+            {
+                players = _playerService.GetByIds(existingPlayerIds);
+            }
+
+            var playerCountryIds = players.Select(player => player.CountryId).ToList();
+            countryIds.AddRange(playerCountryIds);
+
+            var countries = countryService.FindByIds(countryIds);
+            var countryMap = countries.ToDictionary(country => country.Id, country => country);
+
+            var homeCountryId = updateRequest.HomeCountryId ?? existingSeries.HomeCountryId;
+
+            var homeCountry = countryMap.GetValueOrDefault(homeCountryId, null);
+            if (null == homeCountry)
+            {
+                throw new NotFoundException("Country");
+            }
+
+            var tourId = updateRequest.TourId ?? existingSeries.TourId;
+
+            var tour = tourService.GetById(tourId);
+            if (null == tour)
+            {
+                throw new NotFoundException("Tour");
+            }
+
+            var seriesTypeId = updateRequest.TypeId ?? existingSeries.TypeId;
+
+            var seriesType = seriesTypeService.FindById(seriesTypeId);
+            if (null == seriesType)
+            {
+                throw new NotFoundException("Type");
+            }
+
+            var gameTypeId = updateRequest.GameTypeId ?? existingSeries.GameTypeId;
+
+            var gameType = gameTypeService.FindById(gameTypeId);
+            if (null == gameType)
+            {
+                throw new NotFoundException("Game type");
+            }
+
+            using (var scope = new TransactionScope())
+            {
+                seriesService.Update(existingSeries, updateRequest);
+                seriesTeamsMapService.Add(id, teamsToAdd);
+                seriesTeamsMapService.Remove(id, teamsToDelete);
+                _manOfTheSeriesService.Add(id, manOfTheSeriesToAdd);
+                _manOfTheSeriesService.Remove(id, manOfTheSeriesToDelete);
+                scope.Complete();
+            }
+
+            var teamTypes = teamTypeService.FindByIds(teamTypeIds);
+            var teamTypeMap = teamTypes.ToDictionary(tt => tt.Id, tt => tt);
+
+            var teamResponses = teams.Select(team => new TeamResponse(team, new CountryResponse(countryMap[team.CountryId]), new TeamTypeResponse(teamTypeMap[team.TypeId]))).ToList();
+            var playerResponses = players.Select(player => new PlayerResponse(player, new CountryResponse(countryMap[player.CountryId]))).ToList();
+            
+            return Ok(new Response(new SeriesResponse(existingSeries, new CountryResponse(countryMap[existingSeries.HomeCountryId]), new TourResponse(tour), new SeriesTypeResponse(seriesType), new GameTypeResponse(gameType), teamResponses, playerResponses)));
         }
     }
 }
