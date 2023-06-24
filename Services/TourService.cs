@@ -37,5 +37,15 @@ namespace Com.Dotnet.Cric.Services
 		{
 			return tourRepository.GetByIds(ids);
 		}
+		
+		public List<Tour> GetAllForYear(int year, int page, int limit)
+		{
+			return tourRepository.GetAllForYear(year, page, limit);
+		}
+
+		public int GetTotalCountForYear(int year)
+		{
+			return tourRepository.GetTotalCountForYear(year);
+		}
 	}
 }
