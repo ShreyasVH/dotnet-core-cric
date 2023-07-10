@@ -38,5 +38,10 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.Stadiums.Count();
         }
+
+        public Stadium GetById(long id)
+        {
+            return _dbContext.Stadiums.Find(id);
+        }
     }
 }

@@ -14,9 +14,14 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "http://localhost:5030",
+      "applicationUrl": "http://localhost:17051",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MSSQL_IP": "127.0.0.1",
+        "MSSQL_PORT": "1433",
+        "MSSQL_DB": "cric_dotnetcore",
+        "MSSQL_USER": "sa",
+        "MSSQL_PASSWORD": "P@ssword"
       }
     },
     "https": {

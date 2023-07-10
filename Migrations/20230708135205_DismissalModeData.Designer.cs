@@ -4,6 +4,7 @@ using Com.Dotnet.Cric.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace dotnet.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230708135205_DismissalModeData")]
+    partial class DismissalModeData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,117 +24,6 @@ namespace dotnet.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Com.Dotnet.Cric.Models.BattingScore", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Balls")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("BowlerId")
-                        .HasColumnType("int");
-
-                    b.Property<byte?>("DismissalModeId")
-                        .HasColumnType("tinyint");
-
-                    b.Property<int>("Fours")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Innings")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MatchPlayerId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Number")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Runs")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Sixes")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BowlerId")
-                        .HasDatabaseName("Bowler");
-
-                    b.HasIndex("DismissalModeId")
-                        .HasDatabaseName("Dismissal_Mode");
-
-                    b.HasIndex("MatchPlayerId")
-                        .HasDatabaseName("Match_Player");
-
-                    b.HasIndex("MatchPlayerId", "Innings")
-                        .IsUnique()
-                        .HasDatabaseName("UK_BS_Match_Player_Innings");
-
-                    b.ToTable("BattingScores");
-                });
-
-            modelBuilder.Entity("Com.Dotnet.Cric.Models.BowlingFigure", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Balls")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Innings")
-                        .HasColumnType("int");
-
-                    b.Property<byte>("Maidens")
-                        .HasColumnType("tinyint");
-
-                    b.Property<int>("MatchPlayerId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Runs")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Wickets")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MatchPlayerId")
-                        .HasDatabaseName("Match_Player");
-
-                    b.HasIndex("MatchPlayerId", "Innings")
-                        .IsUnique()
-                        .HasDatabaseName("UK_BF_Match_Player_Innings");
-
-                    b.ToTable("BowlingFigures");
-                });
-
-            modelBuilder.Entity("Com.Dotnet.Cric.Models.Captain", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("MatchPlayerId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MatchPlayerId")
-                        .IsUnique()
-                        .HasDatabaseName("Match_Player");
-
-                    b.ToTable("Captains");
-                });
 
             modelBuilder.Entity("Com.Dotnet.Cric.Models.Country", b =>
                 {
@@ -172,102 +64,6 @@ namespace dotnet.Migrations
                     b.ToTable("DismissalModes");
                 });
 
-            modelBuilder.Entity("Com.Dotnet.Cric.Models.Extras", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<long>("BattingTeamId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("BowlingTeamId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Innings")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MatchId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Runs")
-                        .HasColumnType("int");
-
-                    b.Property<byte>("TypeId")
-                        .HasColumnType("tinyint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BattingTeamId")
-                        .HasDatabaseName("Batting_Team");
-
-                    b.HasIndex("BowlingTeamId");
-
-                    b.HasIndex("MatchId")
-                        .HasDatabaseName("Match");
-
-                    b.HasIndex("TypeId")
-                        .HasDatabaseName("Type");
-
-                    b.HasIndex("MatchId", "TypeId", "BattingTeamId", "Innings")
-                        .IsUnique()
-                        .HasDatabaseName("UK_E_Match_Type_Batting_Innings");
-
-                    b.ToTable("Extras");
-                });
-
-            modelBuilder.Entity("Com.Dotnet.Cric.Models.ExtrasType", b =>
-                {
-                    b.Property<byte>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<byte>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("ExtrasTypes");
-                });
-
-            modelBuilder.Entity("Com.Dotnet.Cric.Models.FielderDismissal", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("MatchPlayerId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ScoreId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MatchPlayerId")
-                        .HasDatabaseName("Match_Player");
-
-                    b.HasIndex("ScoreId")
-                        .HasDatabaseName("Score");
-
-                    b.HasIndex("ScoreId", "MatchPlayerId")
-                        .IsUnique()
-                        .HasDatabaseName("UK_FD_Score_Player_Team");
-
-                    b.ToTable("FielderDismissals");
-                });
-
             modelBuilder.Entity("Com.Dotnet.Cric.Models.GameType", b =>
                 {
                     b.Property<int>("Id")
@@ -287,26 +83,6 @@ namespace dotnet.Migrations
                         .IsUnique();
 
                     b.ToTable("GameTypes");
-                });
-
-            modelBuilder.Entity("Com.Dotnet.Cric.Models.ManOfTheMatch", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("MatchPlayerId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MatchPlayerId")
-                        .IsUnique()
-                        .HasDatabaseName("Match_Player");
-
-                    b.ToTable("ManOfTheMatch");
                 });
 
             modelBuilder.Entity("Com.Dotnet.Cric.Models.ManOfTheSeries", b =>
@@ -716,26 +492,6 @@ namespace dotnet.Migrations
                     b.ToTable("Tours");
                 });
 
-            modelBuilder.Entity("Com.Dotnet.Cric.Models.WicketKeeper", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("MatchPlayerId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MatchPlayerId")
-                        .IsUnique()
-                        .HasDatabaseName("Match_Player");
-
-                    b.ToTable("WicketKeepers");
-                });
-
             modelBuilder.Entity("Com.Dotnet.Cric.Models.WinMarginType", b =>
                 {
                     b.Property<byte>("Id")
@@ -755,130 +511,6 @@ namespace dotnet.Migrations
                         .IsUnique();
 
                     b.ToTable("WinMarginTypes");
-                });
-
-            modelBuilder.Entity("Com.Dotnet.Cric.Models.BattingScore", b =>
-                {
-                    b.HasOne("Com.Dotnet.Cric.Models.MatchPlayerMap", "BowlerMatchPlayer")
-                        .WithMany()
-                        .HasForeignKey("BowlerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_BS_Bowler");
-
-                    b.HasOne("Com.Dotnet.Cric.Models.DismissalMode", "DismissalMode")
-                        .WithMany()
-                        .HasForeignKey("DismissalModeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK_BS_Dismissal_Mode");
-
-                    b.HasOne("Com.Dotnet.Cric.Models.MatchPlayerMap", "BatsmanMatchPlayer")
-                        .WithMany()
-                        .HasForeignKey("MatchPlayerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_BS_Match_Player");
-
-                    b.Navigation("BatsmanMatchPlayer");
-
-                    b.Navigation("BowlerMatchPlayer");
-
-                    b.Navigation("DismissalMode");
-                });
-
-            modelBuilder.Entity("Com.Dotnet.Cric.Models.BowlingFigure", b =>
-                {
-                    b.HasOne("Com.Dotnet.Cric.Models.MatchPlayerMap", "MatchPlayerMap")
-                        .WithMany()
-                        .HasForeignKey("MatchPlayerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_BF_Match_Player");
-
-                    b.Navigation("MatchPlayerMap");
-                });
-
-            modelBuilder.Entity("Com.Dotnet.Cric.Models.Captain", b =>
-                {
-                    b.HasOne("Com.Dotnet.Cric.Models.MatchPlayerMap", "MatchPlayerMap")
-                        .WithMany()
-                        .HasForeignKey("MatchPlayerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_C_Match_Player");
-
-                    b.Navigation("MatchPlayerMap");
-                });
-
-            modelBuilder.Entity("Com.Dotnet.Cric.Models.Extras", b =>
-                {
-                    b.HasOne("Com.Dotnet.Cric.Models.Team", "BattingTeam")
-                        .WithMany()
-                        .HasForeignKey("BattingTeamId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_E_Batting_Team");
-
-                    b.HasOne("Com.Dotnet.Cric.Models.Team", "BowlingTeam")
-                        .WithMany()
-                        .HasForeignKey("BowlingTeamId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_E_Bowling_Team");
-
-                    b.HasOne("Com.Dotnet.Cric.Models.Match", "Match")
-                        .WithMany()
-                        .HasForeignKey("MatchId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_E_Match");
-
-                    b.HasOne("Com.Dotnet.Cric.Models.ExtrasType", "Type")
-                        .WithMany()
-                        .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_E_Type");
-
-                    b.Navigation("BattingTeam");
-
-                    b.Navigation("BowlingTeam");
-
-                    b.Navigation("Match");
-
-                    b.Navigation("Type");
-                });
-
-            modelBuilder.Entity("Com.Dotnet.Cric.Models.FielderDismissal", b =>
-                {
-                    b.HasOne("Com.Dotnet.Cric.Models.MatchPlayerMap", "MatchPlayerMap")
-                        .WithMany()
-                        .HasForeignKey("MatchPlayerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_FD_Match_Player");
-
-                    b.HasOne("Com.Dotnet.Cric.Models.BattingScore", "BattingScore")
-                        .WithMany()
-                        .HasForeignKey("ScoreId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_FD_Score");
-
-                    b.Navigation("BattingScore");
-
-                    b.Navigation("MatchPlayerMap");
-                });
-
-            modelBuilder.Entity("Com.Dotnet.Cric.Models.ManOfTheMatch", b =>
-                {
-                    b.HasOne("Com.Dotnet.Cric.Models.MatchPlayerMap", "MatchPlayerMap")
-                        .WithMany()
-                        .HasForeignKey("MatchPlayerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_MOTM_Match_Player");
-
-                    b.Navigation("MatchPlayerMap");
                 });
 
             modelBuilder.Entity("Com.Dotnet.Cric.Models.ManOfTheSeries", b =>
@@ -1094,18 +726,6 @@ namespace dotnet.Migrations
                     b.Navigation("Country");
 
                     b.Navigation("Type");
-                });
-
-            modelBuilder.Entity("Com.Dotnet.Cric.Models.WicketKeeper", b =>
-                {
-                    b.HasOne("Com.Dotnet.Cric.Models.MatchPlayerMap", "MatchPlayerMap")
-                        .WithMany()
-                        .HasForeignKey("MatchPlayerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_WK_Match_Player");
-
-                    b.Navigation("MatchPlayerMap");
                 });
 #pragma warning restore 612, 618
         }

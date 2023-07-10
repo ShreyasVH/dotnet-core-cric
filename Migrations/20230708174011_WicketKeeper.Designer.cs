@@ -4,6 +4,7 @@ using Com.Dotnet.Cric.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace dotnet.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230708174011_WicketKeeper")]
+    partial class WicketKeeper
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -287,26 +290,6 @@ namespace dotnet.Migrations
                         .IsUnique();
 
                     b.ToTable("GameTypes");
-                });
-
-            modelBuilder.Entity("Com.Dotnet.Cric.Models.ManOfTheMatch", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("MatchPlayerId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MatchPlayerId")
-                        .IsUnique()
-                        .HasDatabaseName("Match_Player");
-
-                    b.ToTable("ManOfTheMatch");
                 });
 
             modelBuilder.Entity("Com.Dotnet.Cric.Models.ManOfTheSeries", b =>
@@ -865,18 +848,6 @@ namespace dotnet.Migrations
                         .HasConstraintName("FK_FD_Score");
 
                     b.Navigation("BattingScore");
-
-                    b.Navigation("MatchPlayerMap");
-                });
-
-            modelBuilder.Entity("Com.Dotnet.Cric.Models.ManOfTheMatch", b =>
-                {
-                    b.HasOne("Com.Dotnet.Cric.Models.MatchPlayerMap", "MatchPlayerMap")
-                        .WithMany()
-                        .HasForeignKey("MatchPlayerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_MOTM_Match_Player");
 
                     b.Navigation("MatchPlayerMap");
                 });

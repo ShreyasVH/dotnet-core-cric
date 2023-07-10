@@ -37,5 +37,10 @@ namespace Com.Dotnet.Cric.Services
 		{
 			return stadiumRepository.GetTotalCount();
 		}
+
+		public Stadium GetById(long id)
+		{
+			return stadiumRepository.GetById(id);
+		}
 	}
 }
