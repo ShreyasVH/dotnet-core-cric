@@ -20,16 +20,16 @@ namespace Com.Dotnet.Cric.Responses
         public StadiumResponse Stadium { get; set; }
         public DateTime StartTime { get; set; }
         
-        public List<PlayerResponse> Players { get; set; }
+        public List<PlayerMiniResponse> Players { get; set; }
         public List<BattingScoreResponse> BattingScores { get; set; }
         
         public List<BowlingFigureResponse> BowlingFigures { get; set; }
         public List<ExtrasResponse> Extras { get; set; }
-        public List<PlayerResponse> Captains { get; set; }
-        public List<PlayerResponse> WicketKeepers { get; set; }
-        public List<PlayerResponse> ManOfTheMatchList { get; set; }
+        public List<PlayerMiniResponse> Captains { get; set; }
+        public List<PlayerMiniResponse> WicketKeepers { get; set; }
+        public List<PlayerMiniResponse> ManOfTheMatchList { get; set; }
 
-        public MatchResponse(Match match, Series series, TeamResponse team1, TeamResponse team2, ResultTypeResponse resultType, WinMarginTypeResponse winMarginType, StadiumResponse stadium, List<PlayerResponse> players, List<BattingScoreResponse> battingScores, List<BowlingFigureResponse> bowlingFigures, List<ExtrasResponse> extras, List<long> manOfTheMatchList, List<long> captainIds, List<long> wicketKeeperIds)
+        public MatchResponse(Match match, Series series, TeamResponse team1, TeamResponse team2, ResultTypeResponse resultType, WinMarginTypeResponse winMarginType, StadiumResponse stadium, List<PlayerMiniResponse> players, List<BattingScoreResponse> battingScores, List<BowlingFigureResponse> bowlingFigures, List<ExtrasResponse> extras, List<long> manOfTheMatchList, List<long> captainIds, List<long> wicketKeeperIds)
         {
             Id = match.Id;
             Series = new SeriesMiniResponse(series);

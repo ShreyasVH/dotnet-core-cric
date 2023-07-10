@@ -42,5 +42,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return playerRepository.GetByIds(ids);
         }
+        
+        public Player GetById(long id)
+        {
+            return playerRepository.GetById(id);
+        }
     }
 }

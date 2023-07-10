@@ -15,14 +15,14 @@ namespace Com.Dotnet.Cric.Responses
         public DateTime StartTime { get; set; }
         public List<TeamResponse> Teams { get; set; }
 
-        public List<PlayerResponse> ManOfTheSeriesList { get; set; }
+        public List<PlayerMiniResponse> ManOfTheSeriesList { get; set; }
 
         public SeriesResponse()
         {
 
         }
 
-        public SeriesResponse(Series series, CountryResponse countryResponse, TourResponse tourResponse, SeriesTypeResponse seriesTypeResponse, GameTypeResponse gameTypeResponse, List<TeamResponse> teams, List<PlayerResponse> playerResponses)
+        public SeriesResponse(Series series, CountryResponse countryResponse, TourResponse tourResponse, SeriesTypeResponse seriesTypeResponse, GameTypeResponse gameTypeResponse, List<TeamResponse> teams, List<PlayerMiniResponse> playerResponses)
         {
             this.Id = series.Id;
             this.Name = series.Name;

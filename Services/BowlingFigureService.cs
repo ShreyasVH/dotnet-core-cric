@@ -19,5 +19,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return _bowlingFigureRepository.Add(bowlingFigureRequests, playerToMatchPlayerMap);
         }
+
+        public Dictionary<string, Dictionary<string, int>> GetBowlingStats(long playerId)
+        {
+            return _bowlingFigureRepository.GetBowlingStats(playerId);
+        }
     }
 }

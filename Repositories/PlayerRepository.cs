@@ -44,5 +44,10 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.Players.Where(player => ids.Contains(player.Id)).ToList();
         }
+        
+        public Player GetById(long id)
+        {
+            return _dbContext.Players.Find(id);
+        }
     }
 }

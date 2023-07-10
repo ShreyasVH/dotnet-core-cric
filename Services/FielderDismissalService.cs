@@ -17,5 +17,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return _fielderDismissalRepository.Add(scoreFieldersMap, playerToMatchPlayerMap);
         }
+
+        public Dictionary<string, Dictionary<string, int>> GetFieldingStats(long playerId)
+        {
+            return _fielderDismissalRepository.GetFieldingStats(playerId);
+        }
     }
 }

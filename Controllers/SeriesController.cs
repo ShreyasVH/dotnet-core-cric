@@ -98,7 +98,7 @@ namespace Com.Dotnet.Cric.Controllers
             List<TeamType> teamTypes = teamTypeService.FindByIds(teamTypeIds);
             Dictionary<int, TeamType> teamTypeMap = teamTypes.ToDictionary(teamType => teamType.Id, teamType => teamType);
             List<TeamResponse> teamResponses = teams.Select(team => new TeamResponse(team, new CountryResponse(countryMap[team.CountryId]), new TeamTypeResponse(teamTypeMap[team.TypeId]))).ToList();
-            var seriesResponse = new SeriesResponse(series, new CountryResponse(country), new TourResponse(tour), new SeriesTypeResponse(seriesType), new GameTypeResponse(gameType), teamResponses, new List<PlayerResponse>());
+            var seriesResponse = new SeriesResponse(series, new CountryResponse(country), new TourResponse(tour), new SeriesTypeResponse(seriesType), new GameTypeResponse(gameType), teamResponses, new List<PlayerMiniResponse>());
             return Created("", new Response(seriesResponse));
         }
         
@@ -162,7 +162,7 @@ namespace Com.Dotnet.Cric.Controllers
             var tourMap = tours.ToDictionary(tour => tour.Id, tour => tour);
 
             var teamResponses = teams.Select(team => new TeamResponse(team, new CountryResponse(countryMap[team.CountryId]), new TeamTypeResponse(teamTypeMap[team.TypeId]))).ToList();
-            var playerResponses = players.Select(player => new PlayerResponse(player, new CountryResponse(countryMap[player.CountryId]))).ToList();
+            var playerResponses = players.Select(player => new PlayerMiniResponse(player, new CountryResponse(countryMap[player.CountryId]))).ToList();
             
             var seriesResponses = seriesList.Select(series => new SeriesResponse(series, new CountryResponse(countryMap[series.HomeCountryId]), new TourResponse(tourMap[series.TourId]), new SeriesTypeResponse(seriesTypeMap[series.TypeId]), new GameTypeResponse(gameTypeMap[series.GameTypeId]), teamResponses, playerResponses)).ToList();
 
@@ -299,7 +299,7 @@ namespace Com.Dotnet.Cric.Controllers
             var teamTypeMap = teamTypes.ToDictionary(tt => tt.Id, tt => tt);
 
             var teamResponses = teams.Select(team => new TeamResponse(team, new CountryResponse(countryMap[team.CountryId]), new TeamTypeResponse(teamTypeMap[team.TypeId]))).ToList();
-            var playerResponses = players.Select(player => new PlayerResponse(player, new CountryResponse(countryMap[player.CountryId]))).ToList();
+            var playerResponses = players.Select(player => new PlayerMiniResponse(player, new CountryResponse(countryMap[player.CountryId]))).ToList();
             
             return Ok(new Response(new SeriesResponse(existingSeries, new CountryResponse(countryMap[existingSeries.HomeCountryId]), new TourResponse(tour), new SeriesTypeResponse(seriesType), new GameTypeResponse(gameType), teamResponses, playerResponses)));
         }

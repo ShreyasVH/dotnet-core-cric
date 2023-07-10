@@ -167,8 +167,8 @@ namespace Com.Dotnet.Cric.Controllers
                     var battingScoreFromDb = battingScoreMap[key];
 
                     DismissalModeResponse dismissalModeResponse = null;
-                    var fielders = new List<PlayerResponse>();
-                    PlayerResponse bowler = null;
+                    var fielders = new List<PlayerMiniResponse>();
+                    PlayerMiniResponse bowler = null;
 
                     if (battingScoreRequest.DismissalModeId.HasValue)
                     {
@@ -177,7 +177,7 @@ namespace Com.Dotnet.Cric.Controllers
                         if (battingScoreRequest.BowlerId.HasValue)
                         {
                             var bowlerPlayer = playerMap[battingScoreRequest.BowlerId.Value];
-                            bowler = new PlayerResponse(bowlerPlayer, new CountryResponse(countryMap[bowlerPlayer.CountryId]));
+                            bowler = new PlayerMiniResponse(bowlerPlayer, new CountryResponse(countryMap[bowlerPlayer.CountryId]));
                         }
 
                         if (!battingScoreRequest.FielderIds.IsNullOrEmpty())
@@ -185,7 +185,7 @@ namespace Com.Dotnet.Cric.Controllers
                             fielders = battingScoreRequest.FielderIds.Select(playerId =>
                             {
                                 var fielderPlayer = playerMap[playerId];
-                                return new PlayerResponse(fielderPlayer, new CountryResponse(countryMap[fielderPlayer.CountryId]));
+                                return new PlayerMiniResponse(fielderPlayer, new CountryResponse(countryMap[fielderPlayer.CountryId]));
                             }).ToList();
                             scoreFielderMap.Add(battingScoreFromDb.Id, battingScoreRequest.FielderIds);
                         }
@@ -194,7 +194,7 @@ namespace Com.Dotnet.Cric.Controllers
                     var batsmanPlayer = playerMap[battingScoreRequest.PlayerId];
                     battingScoreResponses.Add(new BattingScoreResponse(
                         battingScoreFromDb,
-                        new PlayerResponse(batsmanPlayer, new CountryResponse(countryMap[batsmanPlayer.CountryId])),
+                        new PlayerMiniResponse(batsmanPlayer, new CountryResponse(countryMap[batsmanPlayer.CountryId])),
                         dismissalModeResponse,
                         bowler,
                         fielders
@@ -214,7 +214,7 @@ namespace Com.Dotnet.Cric.Controllers
 
                     var bowlerPlayer = playerMap[bowlingFigureRequest.PlayerId];
 
-                    bowlingFigureResponses.Add(new BowlingFigureResponse(bowlingFigure, new PlayerResponse(bowlerPlayer, new CountryResponse(countryMap[bowlerPlayer.CountryId]))));
+                    bowlingFigureResponses.Add(new BowlingFigureResponse(bowlingFigure, new PlayerMiniResponse(bowlerPlayer, new CountryResponse(countryMap[bowlerPlayer.CountryId]))));
                 }
 
                 var extrasTypes = _extrasTypeService.GetAll();
@@ -240,7 +240,7 @@ namespace Com.Dotnet.Cric.Controllers
                 scope.Complete();
             }
 
-            var playerResponses = allPlayers.Select(player => new PlayerResponse(player, new CountryResponse(countryMap[player.CountryId]))).ToList();
+            var playerResponses = allPlayers.Select(player => new PlayerMiniResponse(player, new CountryResponse(countryMap[player.CountryId]))).ToList();
 
             var matchResponse = new MatchResponse(
                 match,

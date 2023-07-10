@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
 using Com.Dotnet.Cric.Models;
 
 namespace Com.Dotnet.Cric.Responses
 {
-    public class PlayerResponse
+    public class PlayerMiniResponse
     {
         public long Id { get; set; }
         public string Name { get; set; }
@@ -13,20 +12,16 @@ namespace Com.Dotnet.Cric.Responses
         public DateOnly DateOfBirth { get; set; }
         public string Image { get; set; }
 
-        public Dictionary<string, Dictionary<string, int>> DismissalStats { get; set; } = new();
-        public Dictionary<string, BattingStats> BattingStats { get; set; } = new();
-        public Dictionary<string, BowlingStats> BowlingStats { get; set; } = new();
-        public Dictionary<string, FieldingStats> FieldingStats { get; set; } = new();
-
-        public PlayerResponse()
+        public PlayerMiniResponse()
         {
 
         }
 
-        public PlayerResponse(Player player)
+        public PlayerMiniResponse(Player player, CountryResponse countryResponse)
         {
             this.Id = player.Id;
             this.Name = player.Name;
+            this.Country = countryResponse;
             this.DateOfBirth = player.DateOfBirth;
             this.Image = player.Image;
         }

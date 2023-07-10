@@ -18,5 +18,15 @@ namespace Com.Dotnet.Cric.Services
         {
             return _battingScoreRepository.Add(battingScoreRequests, playerToMatchPlayerMap);
         }
+
+        public Dictionary<string, Dictionary<string, int>> GetDismissalStats(long playerId)
+        {
+            return _battingScoreRepository.GetDismissalStats(playerId);
+        }
+        
+        public Dictionary<string, Dictionary<string, int>> GetBattingStats(long playerId)
+        {
+            return _battingScoreRepository.GetBattingStats(playerId);
+        }
     }
 }
