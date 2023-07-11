@@ -11,7 +11,7 @@ namespace Com.Dotnet.Cric.Responses
         public int Wickets { get; set; }
         public double? Economy { get; set; }
         public double? Average { get; set; }
-        public double StrikeRate { get; set; }
+        public double? StrikeRate { get; set; }
         public int Fifers { get; set; }
         public int TenWickets { get; set; }
 
