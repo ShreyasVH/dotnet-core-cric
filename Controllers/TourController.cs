@@ -41,5 +41,13 @@ namespace Com.Dotnet.Cric.Controllers
 
             return Ok(new Response(new PaginatedResponse<TourResponse>(totalCount, tourResponses, page, limit)));
         }
+
+        [HttpGet]
+        [Route("/cric/v1/tours/years")]
+        public IActionResult GetAllYears()
+        {
+            var years = tourService.GetAllYears();
+            return Ok(new Response(years));
+        }
     }
 }

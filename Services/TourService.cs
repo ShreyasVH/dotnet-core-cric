@@ -47,5 +47,10 @@ namespace Com.Dotnet.Cric.Services
 		{
 			return tourRepository.GetTotalCountForYear(year);
 		}
+
+		public List<int> GetAllYears()
+		{
+			return tourRepository.GetAllYears();
+		}
 	}
 }

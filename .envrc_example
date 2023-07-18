@@ -15,3 +15,5 @@ export ALLOWED_ORIGINS=
 export PATH=
 
 export DOTNET_ROOT=
+
+export ASPNETCORE_ALLOWED_ORIGINS=

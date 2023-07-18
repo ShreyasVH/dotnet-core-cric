@@ -8,13 +8,10 @@ using Com.Dotnet.Cric.Requests.Tours;
 
 namespace Com.Dotnet.Cric.Repositories
 {
-    public class TourRepository
+    public class TourRepository: CustomRepository
     {
-        private readonly AppDbContext _dbContext;
-
-        public TourRepository(AppDbContext dbContext)
+        public TourRepository(AppDbContext dbContext): base(dbContext)
         {
-            _dbContext = dbContext;
         }
 
         public Tour Create(CreateRequest createRequest)
@@ -44,7 +41,7 @@ namespace Com.Dotnet.Cric.Repositories
         {
             DateTime startTime = new DateTime(year, 1, 1, 0, 0, 0);
             DateTime endTime = new DateTime(year, 12, 31, 23, 59, 59);
-            return _dbContext.Tours.Where(tour => tour.StartTime >= startTime && tour.StartTime <= endTime).OrderBy(t => t.Name).Skip((page - 1) * limit).Take(limit).ToList();
+            return _dbContext.Tours.Where(tour => tour.StartTime >= startTime && tour.StartTime <= endTime).OrderByDescending(t => t.Name).Skip((page - 1) * limit).Take(limit).ToList();
         }
 
         public int GetTotalCountForYear(int year)
@@ -52,6 +49,20 @@ namespace Com.Dotnet.Cric.Repositories
             DateTime startTime = new DateTime(year, 1, 1, 0, 0, 0);
             DateTime endTime = new DateTime(year, 12, 31, 23, 59, 59);
             return _dbContext.Tours.Count(tour => tour.StartTime >= startTime && tour.StartTime <= endTime);
+        }
+
+        public List<int> GetAllYears()
+        {
+            var years = new List<int>();
+            var sql = "SELECT DISTINCT (YEAR(StartTime)) AS year FROM Tours ORDER BY year DESC";
+            var result = ExecuteQuery(sql);
+
+            foreach (var row in result)
+            {
+                years.Add(Convert.ToInt32(row["year"]));
+            }
+
+            return years;
         }
     }
 }
