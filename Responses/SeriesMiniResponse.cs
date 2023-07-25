@@ -10,17 +10,17 @@ namespace Com.Dotnet.Cric.Responses
         public long HomeCountryId { get; set; }
         public long TourId { get; set; }
         public int TypeId { get; set; }
-        public int GameTypeId { get; set; }
+        public GameTypeResponse GameType { get; set; }
         public DateTime StartTime { get; set; }
 
-        public SeriesMiniResponse(Series series)
+        public SeriesMiniResponse(Series series, GameType gameType)
         {
             Id = series.Id;
             Name = series.Name;
             HomeCountryId = series.HomeCountryId;
             TourId = series.TourId;
             TypeId = series.TypeId;
-            GameTypeId = series.GameTypeId;
+            GameType = new GameTypeResponse(gameType);
             StartTime = series.StartTime;
         }
     }

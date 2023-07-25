@@ -34,8 +34,9 @@ namespace Com.Dotnet.Cric.Controllers
         private readonly CaptainService _captainService;
         private readonly WicketKeeperService _wicketKeeperService;
         private readonly ManOfTheMatchService _manOfTheMatchService;
+        private readonly GameTypeService _gameTypeService;
 
-        public MatchController(MatchService matchService, SeriesService seriesService, TeamService teamService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, StadiumService stadiumService, TeamTypeService teamTypeService, CountryService countryService, MatchPlayerMapService matchPlayerMapService, PlayerService playerService, BattingScoreService battingScoreService, DismissalModeService dismissalModeService, BowlingFigureService bowlingFigureService, FielderDismissalService fielderDismissalService, ExtrasTypeService extrasTypeService, ExtrasService extrasService, CaptainService captainService, WicketKeeperService wicketKeeperService, ManOfTheMatchService manOfTheMatchService)
+        public MatchController(MatchService matchService, SeriesService seriesService, TeamService teamService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, StadiumService stadiumService, TeamTypeService teamTypeService, CountryService countryService, MatchPlayerMapService matchPlayerMapService, PlayerService playerService, BattingScoreService battingScoreService, DismissalModeService dismissalModeService, BowlingFigureService bowlingFigureService, FielderDismissalService fielderDismissalService, ExtrasTypeService extrasTypeService, ExtrasService extrasService, CaptainService captainService, WicketKeeperService wicketKeeperService, ManOfTheMatchService manOfTheMatchService, GameTypeService gameTypeService)
         {
             _matchService = matchService;
             _seriesService = seriesService;
@@ -56,6 +57,7 @@ namespace Com.Dotnet.Cric.Controllers
             _captainService = captainService;
             _wicketKeeperService = wicketKeeperService;
             _manOfTheMatchService = manOfTheMatchService;
+            _gameTypeService = gameTypeService;
         }
 
         [HttpPost]
@@ -67,6 +69,8 @@ namespace Com.Dotnet.Cric.Controllers
             {
                 throw new NotFoundException("Series");
             }
+
+            var gameType = _gameTypeService.FindById(series.GameTypeId);
 
             List<long> countryIds = new List<long>();
 
@@ -245,6 +249,7 @@ namespace Com.Dotnet.Cric.Controllers
             var matchResponse = new MatchResponse(
                 match,
                 series,
+                gameType,
                 new TeamResponse(team1, new CountryResponse(countryMap[team1.CountryId]), new TeamTypeResponse(teamTypeMap[team1.TypeId])),
                 new TeamResponse(team2, new CountryResponse(countryMap[team2.CountryId]), new TeamTypeResponse(teamTypeMap[team2.TypeId])),
                 new ResultTypeResponse(resultType),

@@ -29,10 +29,10 @@ namespace Com.Dotnet.Cric.Responses
         public List<PlayerMiniResponse> WicketKeepers { get; set; }
         public List<PlayerMiniResponse> ManOfTheMatchList { get; set; }
 
-        public MatchResponse(Match match, Series series, TeamResponse team1, TeamResponse team2, ResultTypeResponse resultType, WinMarginTypeResponse winMarginType, StadiumResponse stadium, List<PlayerMiniResponse> players, List<BattingScoreResponse> battingScores, List<BowlingFigureResponse> bowlingFigures, List<ExtrasResponse> extras, List<long> manOfTheMatchList, List<long> captainIds, List<long> wicketKeeperIds)
+        public MatchResponse(Match match, Series series, GameType gameType, TeamResponse team1, TeamResponse team2, ResultTypeResponse resultType, WinMarginTypeResponse winMarginType, StadiumResponse stadium, List<PlayerMiniResponse> players, List<BattingScoreResponse> battingScores, List<BowlingFigureResponse> bowlingFigures, List<ExtrasResponse> extras, List<long> manOfTheMatchList, List<long> captainIds, List<long> wicketKeeperIds)
         {
             Id = match.Id;
-            Series = new SeriesMiniResponse(series);
+            Series = new SeriesMiniResponse(series, gameType);
             Team1 = team1;
             Team2 = team2;
 

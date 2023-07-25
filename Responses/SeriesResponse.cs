@@ -9,7 +9,7 @@ namespace Com.Dotnet.Cric.Responses
         public long Id { get; set; }
         public string Name { get; set; }
         public CountryResponse HomeCountry { get; set; }
-        public TourResponse Tour { get; set; }
+        public TourMiniResponse Tour { get; set; }
         public SeriesTypeResponse Type { get; set; }
         public GameTypeResponse GameType { get; set; }
         public DateTime StartTime { get; set; }
@@ -22,7 +22,7 @@ namespace Com.Dotnet.Cric.Responses
 
         }
 
-        public SeriesResponse(Series series, CountryResponse countryResponse, TourResponse tourResponse, SeriesTypeResponse seriesTypeResponse, GameTypeResponse gameTypeResponse, List<TeamResponse> teams, List<PlayerMiniResponse> playerResponses)
+        public SeriesResponse(Series series, CountryResponse countryResponse, TourMiniResponse tourResponse, SeriesTypeResponse seriesTypeResponse, GameTypeResponse gameTypeResponse, List<TeamResponse> teams, List<PlayerMiniResponse> playerResponses)
         {
             this.Id = series.Id;
             this.Name = series.Name;

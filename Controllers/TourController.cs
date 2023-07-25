@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Com.Dotnet.Cric.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 using Com.Dotnet.Cric.Models;
@@ -12,10 +13,14 @@ namespace Com.Dotnet.Cric.Controllers
     public class TourController : ControllerBase
     {
         private readonly TourService tourService;
+        private readonly SeriesService _serviceService;
+        private readonly GameTypeService _gameTypeService;
 
-        public TourController(TourService tourService)
+        public TourController(TourService tourService, SeriesService seriesService, GameTypeService gameTypeService)
         {
             this.tourService = tourService;
+            _serviceService = seriesService;
+            _gameTypeService = gameTypeService;
         }
 
         [HttpPost]
@@ -23,7 +28,7 @@ namespace Com.Dotnet.Cric.Controllers
         public IActionResult Create(CreateRequest createRequest)
         {
             var tour = tourService.Create(createRequest);
-            var tourResponse = new TourResponse(tour);
+            var tourResponse = new TourMiniResponse(tour);
             return Created("", new Response(tourResponse));
         }
         
@@ -32,14 +37,14 @@ namespace Com.Dotnet.Cric.Controllers
         public IActionResult GetAll(int year, int page, int limit)
         {
             var tours = tourService.GetAllForYear(year, page, limit);
-            var tourResponses = tours.Select(tour => new TourResponse(tour)).ToList();
+            var tourResponses = tours.Select(tour => new TourMiniResponse(tour)).ToList();
             var totalCount = 0;
             if (page == 1)
             {
                 totalCount = tourService.GetTotalCountForYear(year);
             }
 
-            return Ok(new Response(new PaginatedResponse<TourResponse>(totalCount, tourResponses, page, limit)));
+            return Ok(new Response(new PaginatedResponse<TourMiniResponse>(totalCount, tourResponses, page, limit)));
         }
 
         [HttpGet]
@@ -48,6 +53,29 @@ namespace Com.Dotnet.Cric.Controllers
         {
             var years = tourService.GetAllYears();
             return Ok(new Response(years));
+        }
+        
+        [HttpGet]
+        [Route("/cric/v1/tours/{id:long}")]
+        public IActionResult GetById(long id)
+        {
+            var tour = tourService.GetById(id);
+            if (null == tour)
+            {
+                throw new NotFoundException("Tour");
+            }
+            
+            var tourResponse = new TourResponse(tour);
+            var seriesList = _serviceService.GetByTourId(id);
+
+            var gameTypeIds = seriesList.Select(s => s.GameTypeId).ToList();
+            var gameTypes = _gameTypeService.FindByIds(gameTypeIds);
+            var gameTypeMap = gameTypes.ToDictionary(gt => gt.Id, gt => gt);
+
+            var seriesMiniResponses = seriesList.Select(series => new SeriesMiniResponse(series, gameTypeMap[series.GameTypeId])).ToList();
+            tourResponse.SeriesList = seriesMiniResponses;
+
+            return Ok(new Response(tourResponse));
         }
     }
 }

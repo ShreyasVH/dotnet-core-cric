@@ -1,24 +1,27 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using Com.Dotnet.Cric.Models;
 
 namespace Com.Dotnet.Cric.Responses
 {
-	public class TourResponse
-	{
-		public long Id { get; set; }
-		public string Name { get; set; }
-		public DateTime StartTime { get; set;  }
+    public class TourResponse
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public DateTime StartTime { get; set;  }
+        public List<SeriesMiniResponse> SeriesList { get; set; }
 
-		public TourResponse()
-		{
 
-		}
+        public TourResponse()
+        {
 
-		public TourResponse(Tour tour)
-		{
-			this.Id = tour.Id;
-			this.Name = tour.Name;
-			this.StartTime = tour.StartTime;
-		}
-	}
+        }
+
+        public TourResponse(Tour tour)
+        {
+            this.Id = tour.Id;
+            this.Name = tour.Name;
+            this.StartTime = tour.StartTime;
+        }
+    }
 }

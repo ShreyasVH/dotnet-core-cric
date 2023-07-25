@@ -48,5 +48,10 @@ namespace Com.Dotnet.Cric.Repositories
         {
             _dbContext.SaveChanges();
         }
+        
+        public List<Series> GetByTourId(long tourId)
+        {
+            return _dbContext.Series.Where(s => s.TourId == tourId).OrderByDescending(s => s.StartTime).ToList();
+        }
     }
 }

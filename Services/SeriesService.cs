@@ -90,5 +90,10 @@ namespace Com.Dotnet.Cric.Services
 
             return existingSeries;
         }
+
+        public List<Series> GetByTourId(long tourId)
+        {
+            return seriesRepository.GetByTourId(tourId);
+        }
     }
 }
