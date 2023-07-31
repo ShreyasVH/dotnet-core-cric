@@ -41,7 +41,7 @@ namespace Com.Dotnet.Cric.Repositories
         {
             DateTime startTime = new DateTime(year, 1, 1, 0, 0, 0);
             DateTime endTime = new DateTime(year, 12, 31, 23, 59, 59);
-            return _dbContext.Tours.Where(tour => tour.StartTime >= startTime && tour.StartTime <= endTime).OrderByDescending(t => t.Name).Skip((page - 1) * limit).Take(limit).ToList();
+            return _dbContext.Tours.Where(tour => tour.StartTime >= startTime && tour.StartTime <= endTime).OrderByDescending(t => t.StartTime).Skip((page - 1) * limit).Take(limit).ToList();
         }
 
         public int GetTotalCountForYear(int year)
