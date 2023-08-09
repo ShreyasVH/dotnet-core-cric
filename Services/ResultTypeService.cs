@@ -17,5 +17,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return _resultTypeRepository.GetById(id);
         }
+        
+        public List<ResultType> FindByIds(List<int> ids)
+        {
+            return _resultTypeRepository.GetByIds(ids);
+        }
     }
 }

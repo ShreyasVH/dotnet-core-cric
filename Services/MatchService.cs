@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Com.Dotnet.Cric.Exceptions;
 using Com.Dotnet.Cric.Models;
 using Com.Dotnet.Cric.Repositories;
@@ -25,6 +26,11 @@ namespace Com.Dotnet.Cric.Services
             }
 
             return _matchRepository.Create(createRequest);
+        }
+
+        public List<Match> GetBySeriesId(long seriesId)
+        {
+            return _matchRepository.GetBySeriesId(seriesId);
         }
     }
 }

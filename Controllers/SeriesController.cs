@@ -25,8 +25,12 @@ namespace Com.Dotnet.Cric.Controllers
         private readonly SeriesTeamsMapService seriesTeamsMapService;
         private readonly ManOfTheSeriesService _manOfTheSeriesService;
         private readonly PlayerService _playerService;
+        private readonly MatchService _matchService;
+        private readonly StadiumService _stadiumService;
+        private readonly ResultTypeService _resultTypeService;
+        private readonly WinMarginTypeService _winMarginTypeService;
 
-        public SeriesController(SeriesService seriesService, CountryService countryService, SeriesTypeService seriesTypeService, GameTypeService gameTypeService, TourService tourService, TeamService teamService, TeamTypeService teamTypeService, SeriesTeamsMapService seriesTeamsMapService, ManOfTheSeriesService manOfTheSeriesService, PlayerService playerService)
+        public SeriesController(SeriesService seriesService, CountryService countryService, SeriesTypeService seriesTypeService, GameTypeService gameTypeService, TourService tourService, TeamService teamService, TeamTypeService teamTypeService, SeriesTeamsMapService seriesTeamsMapService, ManOfTheSeriesService manOfTheSeriesService, PlayerService playerService, MatchService matchService, StadiumService stadiumService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService)
         {
             this.seriesService = seriesService;
             this.countryService = countryService;
@@ -38,6 +42,10 @@ namespace Com.Dotnet.Cric.Controllers
             this.seriesTeamsMapService = seriesTeamsMapService;
             this._manOfTheSeriesService = manOfTheSeriesService;
             this._playerService = playerService;
+            _matchService = matchService;
+            _stadiumService = stadiumService;
+            _resultTypeService = resultTypeService;
+            _winMarginTypeService = winMarginTypeService;
         }
 
         [HttpPost]
@@ -302,6 +310,87 @@ namespace Com.Dotnet.Cric.Controllers
             var playerResponses = players.Select(player => new PlayerMiniResponse(player, new CountryResponse(countryMap[player.CountryId]))).ToList();
             
             return Ok(new Response(new SeriesResponse(existingSeries, new CountryResponse(countryMap[existingSeries.HomeCountryId]), new TourMiniResponse(tour), new SeriesTypeResponse(seriesType), new GameTypeResponse(gameType), teamResponses, playerResponses)));
+        }
+
+        [HttpGet]
+        [Route("/cric/v1/series/{id:long}")]
+        public IActionResult GetById(long id)
+        {
+            var series = seriesService.GetById(id);
+            if (null == series)
+            {
+                throw new NotFoundException("Series");
+            }
+
+            var seriesType = seriesTypeService.FindById(series.TypeId);
+            var gameType = gameTypeService.FindById(series.GameTypeId);
+
+            var seriesTeamsMaps = seriesTeamsMapService.GetBySeriesIds(new List<long> { id });
+            var teamIds = seriesTeamsMaps.Select(stm => stm.TeamId).ToList();
+            var teams = teamService.GetByIds(teamIds);
+            var teamTypeIds = new List<int>();
+            var countryIds = new List<long>();
+
+            foreach (var team in teams)
+            {
+                teamTypeIds.Add(team.TypeId);
+                countryIds.Add(team.CountryId);
+            }
+
+            var teamTypes = teamTypeService.FindByIds(teamTypeIds);
+            var teamTypeMap = teamTypes.ToDictionary(tt => tt.Id, tt => tt);
+
+            var matches = _matchService.GetBySeriesId(id);
+
+            var stadiumIds = new List<long>();
+            var resultTypeIds = new List<int>();
+            var winMarginTypeIds = new List<int>();
+
+            foreach (var match in matches)
+            {
+                stadiumIds.Add(match.StadiumId);
+                resultTypeIds.Add(match.ResultTypeId);
+                if (match.WinMarginTypeId.HasValue)
+                {
+                    winMarginTypeIds.Add(match.WinMarginTypeId.Value);
+                }
+            }
+
+            var stadiums = _stadiumService.GetByIds(stadiumIds);
+            var stadiumMap = new Dictionary<long, Stadium>();
+
+            foreach (var stadium in stadiums)
+            {
+                stadiumMap[stadium.Id] = stadium;
+                countryIds.Add(stadium.CountryId);
+            }
+
+            var countries = countryService.FindByIds(countryIds);
+            var countryMap = countries.ToDictionary(c => c.Id, c => c);
+
+            var teamResponses = teams.Select(t => new TeamResponse(t, new CountryResponse(countryMap[t.CountryId]), new TeamTypeResponse(teamTypeMap[t.TypeId]))).ToList();
+            var teamResponseMap = teamResponses.ToDictionary(t => t.Id, t => t);
+
+            var resultTypes = _resultTypeService.FindByIds(resultTypeIds);
+            var resultTypeMap = resultTypes.ToDictionary(rt => rt.Id, rt => rt);
+            var winMarginTypes = _winMarginTypeService.FindByIds(winMarginTypeIds);
+            var winMarginTypeMap = winMarginTypes.ToDictionary(wmt => wmt.Id, wmt => wmt);
+
+            var matchMiniResponses = matches.Select(match =>
+            {
+                var stadium = stadiumMap[match.StadiumId];
+                return new MatchMiniResponse(
+                    match,
+                    teamResponseMap[match.Team1Id],
+                    teamResponseMap[match.Team2Id],
+                    resultTypeMap[match.ResultTypeId],
+                    match.WinMarginTypeId.HasValue ? winMarginTypeMap[match.WinMarginTypeId.Value] : null,
+                    new StadiumResponse(stadium, new CountryResponse(countryMap[stadium.CountryId]))
+                );
+            }).ToList();
+            
+            var seriesResponse = new SeriesDetailedResponse(series, seriesType, gameType, teamResponses, matchMiniResponses);
+            return Ok(new Response(seriesResponse));
         }
     }
 }

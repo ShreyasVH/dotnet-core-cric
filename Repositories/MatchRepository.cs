@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Com.Dotnet.Cric.Data;
 using Com.Dotnet.Cric.Models;
@@ -26,6 +27,11 @@ namespace Com.Dotnet.Cric.Repositories
         public Match GetByStadiumAndStartTime(long stadiumId, DateTime startTime)
         {
             return _dbContext.Matches.FirstOrDefault(m => m.StadiumId == stadiumId && m.StartTime.Equals(startTime));
+        }
+
+        public List<Match> GetBySeriesId(long seriesId)
+        {
+            return _dbContext.Matches.Where(m => m.SeriesId == seriesId).ToList();
         }
     }
 }
