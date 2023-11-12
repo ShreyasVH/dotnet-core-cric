@@ -26,5 +26,10 @@ namespace Com.Dotnet.Cric.Repositories
             _dbContext.SaveChanges();
             return matchPlayerMaps;
         }
+
+        public List<MatchPlayerMap> GetByMatchId(int matchId)
+        {
+            return _dbContext.MatchPlayerMaps.Where(mpm => mpm.MatchId.Equals(matchId)).ToList();
+        }
     }
 }

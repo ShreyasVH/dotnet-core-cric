@@ -54,5 +54,10 @@ namespace Com.Dotnet.Cric.Repositories
             
             return statsFinal;
         }
+
+        public List<BowlingFigure> GetByMatchPlayerIds(List<int> matchPlayerIds)
+        {
+            return _dbContext.BowlingFigures.Where(bf => matchPlayerIds.Contains(bf.MatchPlayerId)).ToList();
+        }
     }
 }

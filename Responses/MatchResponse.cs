@@ -20,7 +20,7 @@ namespace Com.Dotnet.Cric.Responses
         public StadiumResponse Stadium { get; set; }
         public DateTime StartTime { get; set; }
         
-        public List<PlayerMiniResponse> Players { get; set; }
+        public Dictionary<long, List<PlayerMiniResponse>> Players { get; set; }
         public List<BattingScoreResponse> BattingScores { get; set; }
         
         public List<BowlingFigureResponse> BowlingFigures { get; set; }
@@ -29,7 +29,7 @@ namespace Com.Dotnet.Cric.Responses
         public List<PlayerMiniResponse> WicketKeepers { get; set; }
         public List<PlayerMiniResponse> ManOfTheMatchList { get; set; }
 
-        public MatchResponse(Match match, Series series, GameType gameType, TeamResponse team1, TeamResponse team2, ResultTypeResponse resultType, WinMarginTypeResponse winMarginType, StadiumResponse stadium, List<PlayerMiniResponse> players, List<BattingScoreResponse> battingScores, List<BowlingFigureResponse> bowlingFigures, List<ExtrasResponse> extras, List<long> manOfTheMatchList, List<long> captainIds, List<long> wicketKeeperIds)
+        public MatchResponse(Match match, Series series, GameType gameType, TeamResponse team1, TeamResponse team2, ResultTypeResponse resultType, WinMarginTypeResponse winMarginType, StadiumResponse stadium, Dictionary<long, List<PlayerMiniResponse>> players, List<BattingScoreResponse> battingScores, List<BowlingFigureResponse> bowlingFigures, List<ExtrasResponse> extras, List<long> manOfTheMatchList, List<long> captainIds, List<long> wicketKeeperIds)
         {
             Id = match.Id;
             Series = new SeriesMiniResponse(series, gameType);
@@ -55,7 +55,14 @@ namespace Com.Dotnet.Cric.Responses
             Stadium = stadium;
             StartTime = match.StartTime;
             Players = players;
-            var playerMap = players.ToDictionary(player => player.Id, player => player);
+            var playerMap = new Dictionary<long, PlayerMiniResponse>();
+            foreach (var entry in players)
+            {
+                foreach (var player in entry.Value)
+                {
+                    playerMap.Add(player.Id, player);
+                }
+            }
             BattingScores = battingScores;
             BowlingFigures = bowlingFigures;
             Extras = extras;

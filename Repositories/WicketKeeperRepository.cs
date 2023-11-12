@@ -26,5 +26,10 @@ namespace Com.Dotnet.Cric.Repositories
             
             return wicketKeepers;
         }
+
+        public List<WicketKeeper> GetByMatchPlayerIds(List<int> matchPlayerIds)
+        {
+            return _dbContext.WicketKeepers.Where(wk => matchPlayerIds.Contains(wk.MatchPlayerId)).ToList();
+        }
     }
 }

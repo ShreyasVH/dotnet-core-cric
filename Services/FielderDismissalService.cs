@@ -22,5 +22,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return _fielderDismissalRepository.GetFieldingStats(playerId);
         }
+
+        public List<FielderDismissal> GetByMatchPlayerIds(List<int> matchPlayerIds)
+        {
+            return _fielderDismissalRepository.GetByMatchPlayerIds(matchPlayerIds);
+        }
     }
 }

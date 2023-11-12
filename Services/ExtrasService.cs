@@ -18,5 +18,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return _extrasRepository.Add(matchId, extrasRequests);
         }
+
+        public List<Extras> GetByMatchId(int matchId)
+        {
+            return _extrasRepository.GetByMatchId(matchId);
+        }
     }
 }

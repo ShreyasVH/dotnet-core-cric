@@ -31,7 +31,12 @@ namespace Com.Dotnet.Cric.Repositories
 
         public List<Match> GetBySeriesId(long seriesId)
         {
-            return _dbContext.Matches.Where(m => m.SeriesId == seriesId).ToList();
+            return _dbContext.Matches.Where(m => m.SeriesId == seriesId).OrderBy(m => m.StartTime).ToList();
+        }
+
+        public Match GetById(int id)
+        {
+            return _dbContext.Matches.Find(id);
         }
     }
 }

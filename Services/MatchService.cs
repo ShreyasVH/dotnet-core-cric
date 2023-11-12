@@ -32,5 +32,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return _matchRepository.GetBySeriesId(seriesId);
         }
+
+        public Match GetById(int id)
+        {
+            return _matchRepository.GetById(id);
+        }
     }
 }

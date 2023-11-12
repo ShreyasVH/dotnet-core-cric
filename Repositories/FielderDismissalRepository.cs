@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Com.Dotnet.Cric.Data;
 using Com.Dotnet.Cric.Models;
 
@@ -55,6 +56,11 @@ namespace Com.Dotnet.Cric.Repositories
             }
             
             return statsFinal;
+        }
+
+        public List<FielderDismissal> GetByMatchPlayerIds(List<int> matchPlayerIds)
+        {
+            return _dbContext.FielderDismissals.Where(fd => matchPlayerIds.Contains(fd.MatchPlayerId)).ToList();
         }
     }
 }

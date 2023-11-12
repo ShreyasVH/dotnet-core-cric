@@ -24,5 +24,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return _bowlingFigureRepository.GetBowlingStats(playerId);
         }
+
+        public List<BowlingFigure> GetByMatchPlayerIds(List<int> matchPlayerIds)
+        {
+            return _bowlingFigureRepository.GetByMatchPlayerIds(matchPlayerIds);
+        }
     }
 }

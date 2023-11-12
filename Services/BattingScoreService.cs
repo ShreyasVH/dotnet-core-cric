@@ -28,5 +28,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return _battingScoreRepository.GetBattingStats(playerId);
         }
+
+        public List<BattingScore> GetByMatchPlayerIds(List<int> matchPlayerIds)
+        {
+            return _battingScoreRepository.GetByMatchPlayerIds(matchPlayerIds);
+        }
     }
 }

@@ -26,5 +26,10 @@ namespace Com.Dotnet.Cric.Repositories
             
             return manOfTheMatchList;
         }
+
+        public List<ManOfTheMatch> GetByMatchPlayerIds(List<int> matchPlayerIds)
+        {
+            return _dbContext.ManOfTheMatch.Where(motm => matchPlayerIds.Contains(motm.MatchPlayerId)).ToList();
+        }
     }
 }

@@ -17,5 +17,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return _captainRepository.Add(playerIds, playerToMatchPlayerMap);
         }
+
+        public List<Captain> GetByMatchPlayerIds(List<int> matchPlayerIds)
+        {
+            return _captainRepository.GetByMatchPlayerIds(matchPlayerIds);
+        }
     }
 }

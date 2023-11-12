@@ -17,5 +17,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return _wicketKeeperRepository.Add(playerIds, playerToMatchPlayerMap);
         }
+
+        public List<WicketKeeper> GetByMatchPlayerIds(List<int> matchPlayerIds)
+        {
+            return _wicketKeeperRepository.GetByMatchPlayerIds(matchPlayerIds);
+        }
     }
 }

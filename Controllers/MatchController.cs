@@ -244,7 +244,18 @@ namespace Com.Dotnet.Cric.Controllers
                 scope.Complete();
             }
 
-            var playerResponses = allPlayers.Select(player => new PlayerMiniResponse(player, new CountryResponse(countryMap[player.CountryId]))).ToList();
+            var teamPlayerMap = new Dictionary<long, List<PlayerMiniResponse>>();
+            foreach (var player in allPlayers)
+            {
+                var playerMiniResponse =
+                    new PlayerMiniResponse(player, new CountryResponse(countryMap[player.CountryId]));
+                var teamId = playerTeamMap[player.Id];
+                if (!teamPlayerMap.ContainsKey(teamId))
+                {
+                    teamPlayerMap.Add(teamId, new List<PlayerMiniResponse>());
+                }
+                teamPlayerMap[teamId].Add(playerMiniResponse);
+            }
 
             var matchResponse = new MatchResponse(
                 match,
@@ -255,7 +266,7 @@ namespace Com.Dotnet.Cric.Controllers
                 new ResultTypeResponse(resultType),
                 winMarginTypeResponse,
                 new StadiumResponse(stadium, new CountryResponse(countryMap[stadium.CountryId])),
-                playerResponses,
+                teamPlayerMap,
                 battingScoreResponses,
                 bowlingFigureResponses,
                 extrasResponses,
@@ -265,6 +276,208 @@ namespace Com.Dotnet.Cric.Controllers
             );
 
             return Created("", new Response(matchResponse));
+        }
+
+        [HttpGet]
+        [Route("/cric/v1/matches/{id:int}")]
+        public IActionResult GetById(int id)
+        {
+            Match match = _matchService.GetById(id);
+            if (null == match)
+            {
+                throw new NotFoundException("Match");
+            }
+
+            Series series = _seriesService.GetById(match.SeriesId);
+            if (null == series)
+            {
+                throw new NotFoundException("Series");
+            }
+
+            GameType gameType = _gameTypeService.FindById(series.GameTypeId);
+
+            var countryIds = new List<long>();
+
+            var teamIds = new List<long>
+            {
+                match.Team1Id,
+                match.Team2Id
+            };
+            var teams = _teamService.GetByIds(teamIds);
+            var teamMap = new Dictionary<long, Team>();
+            foreach (var team in teams)
+            {
+                teamMap.Add(team.Id, team);
+                countryIds.Add(team.CountryId);
+            }
+
+            var team1 = teamMap.GetValueOrDefault(match.Team1Id, null);
+            if (null == team1)
+            {
+                throw new NotFoundException("Team 1");
+            }
+            
+            var team2 = teamMap.GetValueOrDefault(match.Team2Id, null);
+            if (null == team2)
+            {
+                throw new NotFoundException("Team 2");
+            }
+
+            var resultType = _resultTypeService.FindById(match.ResultTypeId);
+            if (null == resultType)
+            {
+                throw new NotFoundException("Result type");
+            }
+
+            WinMarginTypeResponse winMarginTypeResponse = null;
+            if (match.WinMarginTypeId.HasValue)
+            {
+                var winMarginType = _winMarginTypeService.FindById(match.WinMarginTypeId.Value);
+                if (null == winMarginType)
+                {
+                    throw new NotFoundException("Win margin type");
+                }
+
+                winMarginTypeResponse = new WinMarginTypeResponse(winMarginType);
+            }
+
+            var stadium = _stadiumService.GetById(match.StadiumId);
+            if (null == stadium)
+            {
+                throw new NotFoundException("Stadium");
+            }
+
+            var matchPlayerMaps = _matchPlayerMapService.GetByMatchId(id);
+            var playerIds = new List<long>();
+            var matchPlayerToPlayerMap = new Dictionary<int, long>();
+            var matchPlayerIds = new List<int>();
+            var playerToTeamMap = new Dictionary<long, long>();
+            foreach(var matchPlayerMap in matchPlayerMaps)
+            {
+                playerIds.Add(matchPlayerMap.PlayerId);
+                matchPlayerToPlayerMap.Add(matchPlayerMap.Id, matchPlayerMap.PlayerId);
+                matchPlayerIds.Add(matchPlayerMap.Id);
+                playerToTeamMap.Add(matchPlayerMap.PlayerId, matchPlayerMap.TeamId);
+            }
+
+            var players = _playerService.GetByIds(playerIds);
+            var playerCountryIds = players.Select(p => p.CountryId).ToList();
+            
+            countryIds.Add(stadium.CountryId);
+            countryIds.AddRange(playerCountryIds);
+            var teamTypeIds = new List<int> { team1.TypeId, team2.TypeId };
+            var teamTypes = _teamTypeService.FindByIds(teamTypeIds);
+            var teamTypeMap = teamTypes.ToDictionary(tt => tt.Id, tt => tt);
+
+            var countries = _countryService.FindByIds(countryIds);
+            var countryMap = countries.ToDictionary(c => c.Id, c => c);
+
+            var playerMap = new Dictionary<long, PlayerMiniResponse>();
+            var teamPlayerMap = new Dictionary<long, List<PlayerMiniResponse>>();
+            foreach (var player in players)
+            {
+                var playerMiniResponse =
+                    new PlayerMiniResponse(player, new CountryResponse(countryMap[player.CountryId]));
+                playerMap.Add(player.Id, playerMiniResponse);
+                var teamId = playerToTeamMap[player.Id];
+                if (!teamPlayerMap.ContainsKey(teamId))
+                {
+                    teamPlayerMap.Add(teamId, new List<PlayerMiniResponse>());
+                }
+                teamPlayerMap[teamId].Add(playerMiniResponse);
+            }
+
+            var manOfTheMatchList = _manOfTheMatchService.GetByMatchPlayerIds(matchPlayerIds);
+            var captains = _captainService.GetByMatchPlayerIds(matchPlayerIds);
+            var wicketKeepers = _wicketKeeperService.GetByMatchPlayerIds(matchPlayerIds);
+            var battingScores = _battingScoreService.GetByMatchPlayerIds(matchPlayerIds);
+            var dismissalModes = _dismissalModeService.GetAll();
+            var dismissalModeMap = dismissalModes.ToDictionary(dm => dm.Id, dm => dm);
+            var fielderDismissals = _fielderDismissalService.GetByMatchPlayerIds(matchPlayerIds);
+            var fielderDismissalMap = fielderDismissals
+                .GroupBy(fd => fd.ScoreId)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.ToList()
+                );
+
+            var battingScoreResponses = new List<BattingScoreResponse>();
+            foreach (var battingScore in battingScores)
+            {
+                var batsmanPlayer = playerMap[matchPlayerToPlayerMap[battingScore.MatchPlayerId]];
+
+
+                DismissalModeResponse dismissalModeResponse = null;
+                if (battingScore.DismissalModeId.HasValue)
+                {
+                    dismissalModeResponse =
+                        new DismissalModeResponse(dismissalModeMap[battingScore.DismissalModeId.Value]);
+                }
+
+                PlayerMiniResponse bowlerPlayer = null;
+                if (battingScore.BowlerId.HasValue)
+                {
+                    bowlerPlayer = playerMap[matchPlayerToPlayerMap[battingScore.BowlerId.Value]];
+                }
+
+                var fielders = new List<PlayerMiniResponse>();
+                if (fielderDismissalMap.ContainsKey(battingScore.Id))
+                {
+                    var fielderDismissalList = fielderDismissalMap[battingScore.Id];
+                    fielders = fielderDismissalList.Select(fd => playerMap[matchPlayerToPlayerMap[fd.MatchPlayerId]]).ToList();
+                }
+                
+                battingScoreResponses.Add(new BattingScoreResponse(
+                    battingScore,
+                    batsmanPlayer,
+                    dismissalModeResponse,
+                    bowlerPlayer,
+                    fielders                    
+                ));
+            }
+
+            var bowlingFigures = _bowlingFigureService.GetByMatchPlayerIds(matchPlayerIds);
+            var bowlingFigureResponses = bowlingFigures.Select(bowlingFigure =>
+            {
+                var bowlerPlayer = playerMap[matchPlayerToPlayerMap[bowlingFigure.MatchPlayerId]];
+                return new BowlingFigureResponse(bowlingFigure, bowlerPlayer);
+            }).ToList();
+
+            var extrasTypes = _extrasTypeService.GetAll();
+            var extrasTypeMap = extrasTypes.ToDictionary(et => et.Id, et => et);
+            var extrasList = _extrasService.GetByMatchId(id);
+            var extrasResponses = extrasList.Select(extras =>
+            {
+                var extrasTypeResponse = new ExtrasTypeResponse(extrasTypeMap[extras.TypeId]);
+                var battingTeam = teamMap[extras.BattingTeamId];
+                var bowlingTeam = teamMap[extras.BowlingTeamId];
+                return new ExtrasResponse(
+                    extras,
+                    extrasTypeResponse,
+                    new TeamResponse(battingTeam, new CountryResponse(countryMap[battingTeam.CountryId]), new TeamTypeResponse(teamTypeMap[battingTeam.TypeId])),
+                    new TeamResponse(bowlingTeam, new CountryResponse(countryMap[bowlingTeam.CountryId]), new TeamTypeResponse(teamTypeMap[bowlingTeam.TypeId]))
+                );
+            }).ToList();
+
+            var matchResponse = new MatchResponse(
+                match,
+                series,
+                gameType,
+                new TeamResponse(team1, new CountryResponse(countryMap[team1.CountryId]), new TeamTypeResponse(teamTypeMap[team1.TypeId])),
+                new TeamResponse(team2, new CountryResponse(countryMap[team2.CountryId]), new TeamTypeResponse(teamTypeMap[team2.TypeId])),
+                new ResultTypeResponse(resultType),
+                winMarginTypeResponse,
+                new StadiumResponse(stadium, new CountryResponse(countryMap[stadium.CountryId])),
+                teamPlayerMap,
+                battingScoreResponses,
+                bowlingFigureResponses,
+                extrasResponses,
+                manOfTheMatchList.Select(motm => matchPlayerToPlayerMap[motm.MatchPlayerId]).ToList(),
+                captains.Select(c => matchPlayerToPlayerMap[c.MatchPlayerId]).ToList(),
+                wicketKeepers.Select(wk => matchPlayerToPlayerMap[wk.MatchPlayerId]).ToList()
+            );
+
+            return Ok(new Response(matchResponse));
         }
     }
 }

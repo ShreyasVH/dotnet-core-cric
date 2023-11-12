@@ -24,5 +24,10 @@ namespace Com.Dotnet.Cric.Repositories
             
             return extrasList;
         }
+
+        public List<Extras> GetByMatchId(int matchId)
+        {
+            return _dbContext.Extras.Where(e => e.MatchId == matchId).ToList();
+        }
     }
 }

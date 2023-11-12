@@ -81,5 +81,10 @@ namespace Com.Dotnet.Cric.Repositories
             
             return statsFinal;
         }
+
+        public List<BattingScore> GetByMatchPlayerIds(List<int> matchPlayerIds)
+        {
+            return _dbContext.BattingScores.Where(bs => matchPlayerIds.Contains(bs.MatchPlayerId)).ToList();
+        }
     }
 }
