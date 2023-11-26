@@ -21,9 +21,9 @@ namespace Com.Dotnet.Cric.Responses
             Message = "";
         }
 
-        public Response(string message)
+        public Response(string message, bool success = false)
         {
-            Success = false;
+            Success = success;
             Message = message;
         }
     }
