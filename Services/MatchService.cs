@@ -37,5 +37,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return _matchRepository.GetById(id);
         }
+        
+        public void Remove(int id)
+        {
+            _matchRepository.Remove(id);
+        }
     }
 }

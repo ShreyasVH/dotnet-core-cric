@@ -31,5 +31,11 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.MatchPlayerMaps.Where(mpm => mpm.MatchId.Equals(matchId)).ToList();
         }
+        
+        public void Remove(int matchId)
+        {
+            _dbContext.MatchPlayerMaps.RemoveRange(GetByMatchId(matchId));
+            _dbContext.SaveChanges();
+        }
     }
 }

@@ -86,5 +86,11 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.BattingScores.Where(bs => matchPlayerIds.Contains(bs.MatchPlayerId)).ToList();
         }
+
+        public void Remove(List<int> matchPlayerIds)
+        {
+            _dbContext.BattingScores.RemoveRange(GetByMatchPlayerIds(matchPlayerIds));
+            _dbContext.SaveChanges();
+        }
     }
 }

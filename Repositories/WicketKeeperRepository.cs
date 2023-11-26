@@ -31,5 +31,11 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.WicketKeepers.Where(wk => matchPlayerIds.Contains(wk.MatchPlayerId)).ToList();
         }
+        
+        public void Remove(List<int> matchPlayerIds)
+        {
+            _dbContext.WicketKeepers.RemoveRange(GetByMatchPlayerIds(matchPlayerIds));
+            _dbContext.SaveChanges();
+        }
     }
 }

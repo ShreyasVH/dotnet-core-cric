@@ -479,5 +479,35 @@ namespace Com.Dotnet.Cric.Controllers
 
             return Ok(new Response(matchResponse));
         }
+
+        [HttpDelete]
+        [Route("/cric/v1/matches/{id:int}")]
+        public IActionResult Remove(int id)
+        {
+            Match match = _matchService.GetById(id);
+            if (null == match)
+            {
+                throw new NotFoundException("Match");
+            }
+
+            using (var scope = new TransactionScope())
+            {
+                var matchPlayerMaps = _matchPlayerMapService.GetByMatchId(id);
+                var matchPlayerIds = matchPlayerMaps.Select(mpm => mpm.Id).ToList();
+                _extrasService.Remove(id);
+                _captainService.Remove(matchPlayerIds);
+                _wicketKeeperService.Remove(matchPlayerIds);
+                _manOfTheMatchService.Remove(matchPlayerIds);
+                _fielderDismissalService.Remove(matchPlayerIds);
+                _battingScoreService.Remove(matchPlayerIds);
+                _bowlingFigureService.Remove(matchPlayerIds);
+                _matchPlayerMapService.Remove(id);
+                _matchService.Remove(id);
+                
+                scope.Complete();
+            }
+
+            return Ok(new Response("Deleted successfully"));
+        }
     }
 }

@@ -31,5 +31,11 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.ManOfTheMatch.Where(motm => matchPlayerIds.Contains(motm.MatchPlayerId)).ToList();
         }
+        
+        public void Remove(List<int> matchPlayerIds)
+        {
+            _dbContext.ManOfTheMatch.RemoveRange(GetByMatchPlayerIds(matchPlayerIds));
+            _dbContext.SaveChanges();
+        }
     }
 }
