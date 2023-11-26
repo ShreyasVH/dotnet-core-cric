@@ -9,6 +9,7 @@ using Com.Dotnet.Cric.Requests.Series;
 using Com.Dotnet.Cric.Responses;
 using Com.Dotnet.Cric.Services;
 using Com.Dotnet.Cric.Exceptions;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Com.Dotnet.Cric.Controllers
 {
@@ -391,6 +392,34 @@ namespace Com.Dotnet.Cric.Controllers
             
             var seriesResponse = new SeriesDetailedResponse(series, seriesType, gameType, teamResponses, matchMiniResponses);
             return Ok(new Response(seriesResponse));
+        }
+
+        [HttpDelete]
+        [Route("/cric/v1/series/{id:long}")]
+        public IActionResult Remove(long id)
+        {
+            var series = seriesService.GetById(id);
+            if (null == series)
+            {
+                throw new NotFoundException("Series");
+            }
+
+            var matches = _matchService.GetBySeriesId(id);
+            if (!matches.IsNullOrEmpty())
+            {
+                throw new ConflictException("Matches still exist");
+            }
+
+            using (var scope = new TransactionScope())
+            {
+                _manOfTheSeriesService.Remove(id);
+                seriesTeamsMapService.Remove(id);
+                seriesService.Remove(id);
+                
+                scope.Complete();
+            }
+
+            return Ok(new Response("Deleted successfully", true));
         }
     }
 }

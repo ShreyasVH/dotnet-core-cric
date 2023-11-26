@@ -53,5 +53,11 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.Series.Where(s => s.TourId == tourId).OrderByDescending(s => s.StartTime).ToList();
         }
+
+        public void Remove(long id)
+        {
+            _dbContext.Series.Remove(GetById(id));
+            _dbContext.SaveChanges();
+        }
     }
 }

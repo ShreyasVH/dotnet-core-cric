@@ -95,5 +95,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return seriesRepository.GetByTourId(tourId);
         }
+
+        public void Remove(long id)
+        {
+            seriesRepository.Remove(id);
+        }
     }
 }

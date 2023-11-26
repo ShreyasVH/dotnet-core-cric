@@ -507,7 +507,7 @@ namespace Com.Dotnet.Cric.Controllers
                 scope.Complete();
             }
 
-            return Ok(new Response("Deleted successfully"));
+            return Ok(new Response("Deleted successfully", true));
         }
     }
 }

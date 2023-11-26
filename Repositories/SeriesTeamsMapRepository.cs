@@ -32,5 +32,11 @@ namespace Com.Dotnet.Cric.Repositories
             _dbContext.SeriesTeamsMap.RemoveRange(seriesTeamsMaps);
             _dbContext.SaveChanges();
         }
+
+        public void Remove(long seriesId)
+        {
+            _dbContext.SeriesTeamsMap.RemoveRange(GetBySeriesIds(new List<long> { seriesId }));
+            _dbContext.SaveChanges();
+        }
     }
 }

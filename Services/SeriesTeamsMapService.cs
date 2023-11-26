@@ -27,5 +27,10 @@ namespace Com.Dotnet.Cric.Services
         {
             seriesTeamsMapRepository.Remove(seriesId, teamIds);
         }
+
+        public void Remove(long seriesId)
+        {
+            seriesTeamsMapRepository.Remove(seriesId);
+        }
     }
 }
