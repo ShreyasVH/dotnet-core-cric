@@ -22,5 +22,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return _wicketKeeperRepository.GetByMatchPlayerIds(matchPlayerIds);
         }
+        
+        public void Remove(List<int> matchPlayerIds)
+        {
+            _wicketKeeperRepository.Remove(matchPlayerIds);
+        }
     }
 }

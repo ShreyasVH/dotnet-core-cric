@@ -29,5 +29,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return _bowlingFigureRepository.GetByMatchPlayerIds(matchPlayerIds);
         }
+        
+        public void Remove(List<int> matchPlayerIds)
+        {
+            _bowlingFigureRepository.Remove(matchPlayerIds);
+        }
     }
 }

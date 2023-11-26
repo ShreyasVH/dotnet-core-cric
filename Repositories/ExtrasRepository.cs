@@ -29,5 +29,11 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.Extras.Where(e => e.MatchId == matchId).ToList();
         }
+
+        public void Remove(int matchId)
+        {
+            _dbContext.Extras.RemoveRange(GetByMatchId(matchId));
+            _dbContext.SaveChanges();
+        }
     }
 }

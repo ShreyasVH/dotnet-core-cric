@@ -33,5 +33,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return _battingScoreRepository.GetByMatchPlayerIds(matchPlayerIds);
         }
+
+        public void Remove(List<int> matchPlayerIds)
+        {
+            _battingScoreRepository.Remove(matchPlayerIds);
+        }
     }
 }

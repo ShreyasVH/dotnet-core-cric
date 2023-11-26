@@ -62,5 +62,11 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.FielderDismissals.Where(fd => matchPlayerIds.Contains(fd.MatchPlayerId)).ToList();
         }
+        
+        public void Remove(List<int> matchPlayerIds)
+        {
+            _dbContext.FielderDismissals.RemoveRange(GetByMatchPlayerIds(matchPlayerIds));
+            _dbContext.SaveChanges();
+        }
     }
 }
