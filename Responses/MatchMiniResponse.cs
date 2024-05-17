@@ -28,8 +28,11 @@ namespace Com.Dotnet.Cric.Responses
             if (match.WinnerId.HasValue)
             {
                 Winner = teamMap[match.WinnerId.Value];
-                WinMargin = match.WinMargin;
-                WinMarginType = new WinMarginTypeResponse(winMarginType);
+                if (match.WinMargin.HasValue)
+                {
+                    WinMargin = match.WinMargin;
+                    WinMarginType = new WinMarginTypeResponse(winMarginType);
+                }
             }
 
             ResultType = new ResultTypeResponse(resultType);
