@@ -47,5 +47,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return playerRepository.GetById(id);
         }
+
+        public void Remove(long id)
+        {
+            playerRepository.Remove(id);
+        }
     }
 }

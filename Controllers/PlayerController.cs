@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 using Microsoft.AspNetCore.Mvc;
 
 using Com.Dotnet.Cric.Requests.Players;
@@ -17,14 +18,26 @@ namespace Com.Dotnet.Cric.Controllers
         private readonly BattingScoreService _battingScoreService;
         private readonly BowlingFigureService _bowlingFigureService;
         private readonly FielderDismissalService _fielderDismissalService;
+        private readonly ManOfTheSeriesService _manOfTheSeriesService;
+        private readonly MatchPlayerMapService _matchPlayerMapService;
 
-        public PlayerController(PlayerService playerService, CountryService countryService, BattingScoreService battingScoreService, BowlingFigureService bowlingFigureService, FielderDismissalService fielderDismissalService)
+        public PlayerController(
+            PlayerService playerService,
+            CountryService countryService,
+            BattingScoreService battingScoreService,
+            BowlingFigureService bowlingFigureService,
+            FielderDismissalService fielderDismissalService,
+            ManOfTheSeriesService manOfTheSeriesService,
+            MatchPlayerMapService matchPlayerMapService
+        )
         {
             this.playerService = playerService;
             this.countryService = countryService;
             _battingScoreService = battingScoreService;
             _bowlingFigureService = bowlingFigureService;
             _fielderDismissalService = fielderDismissalService;
+            _manOfTheSeriesService = manOfTheSeriesService;
+            _matchPlayerMapService = matchPlayerMapService;
         }
 
         [HttpPost]
@@ -158,6 +171,34 @@ namespace Com.Dotnet.Cric.Controllers
             }
 
             return Ok(new Response(playerResponse));
+        }
+        
+        [HttpPost]
+        [Route("/cric/v1/players/merge")]
+        public IActionResult Merge(MergeRequest mergeRequest)
+        {
+            var player = playerService.GetById(mergeRequest.PlayerIdToMerge);
+            if (null == player)
+            {
+                throw new NotFoundException("Player");
+            }
+
+            var originalPlayer = playerService.GetById(mergeRequest.OriginalPlayerId);
+            if (null == originalPlayer)
+            {
+                throw new NotFoundException("Original Player");
+            }
+
+            using (var scope = new TransactionScope())
+            {
+                _manOfTheSeriesService.Merge(mergeRequest);
+                _matchPlayerMapService.Merge(mergeRequest);
+                playerService.Remove(mergeRequest.PlayerIdToMerge);                
+                scope.Complete();
+            }
+
+            
+            return Ok(new Response("Success", true));
         }
     }
 }
