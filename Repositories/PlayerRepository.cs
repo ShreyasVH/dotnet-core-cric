@@ -49,5 +49,12 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.Players.Find(id);
         }
+
+        public void Remove(long id)
+        {
+            _dbContext.Players.Remove(GetById(id));
+            _dbContext.SaveChanges();
+        }
+
     }
 }

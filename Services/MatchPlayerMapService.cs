@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Com.Dotnet.Cric.Models;
 using Com.Dotnet.Cric.Repositories;
+using Com.Dotnet.Cric.Requests.Players;
 
 namespace Com.Dotnet.Cric.Services
 {
@@ -26,6 +27,11 @@ namespace Com.Dotnet.Cric.Services
         public void Remove(int matchId)
         {
             _matchPlayerMapRepository.Remove(matchId);
+        }
+
+        public void Merge(MergeRequest mergeRequest)
+        {
+            _matchPlayerMapRepository.Merge(mergeRequest);
         }
     }
 }

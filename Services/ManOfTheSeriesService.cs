@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Com.Dotnet.Cric.Models;
 using Com.Dotnet.Cric.Repositories;
+using Com.Dotnet.Cric.Requests.Players;
 
 namespace Com.Dotnet.Cric.Services
 {
@@ -31,6 +32,11 @@ namespace Com.Dotnet.Cric.Services
         public void Remove(long seriesId)
         {
             _manOfTheSeriesRepository.Remove(seriesId);
+        }
+
+        public void Merge(MergeRequest mergeRequest)
+        {
+            _manOfTheSeriesRepository.Merge(mergeRequest);
         }
     }
 }

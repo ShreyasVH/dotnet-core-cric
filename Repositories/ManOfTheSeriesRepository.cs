@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Com.Dotnet.Cric.Data;
 using Com.Dotnet.Cric.Models;
+using Com.Dotnet.Cric.Requests.Players;
 
 namespace Com.Dotnet.Cric.Repositories
 {
@@ -25,6 +26,11 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.ManOfTheSeries.Where(mots => seriesIds.Contains(mots.SeriesId)).ToList();
         }
+        
+        public List<ManOfTheSeries> GetByPlayerId(long playerId)
+        {
+            return _dbContext.ManOfTheSeries.Where(mots => playerId == mots.PlayerId).ToList();
+        }
 
         public void Remove(long seriesId, List<long> playerIds)
         {
@@ -36,6 +42,13 @@ namespace Com.Dotnet.Cric.Repositories
         public void Remove(long seriesId)
         {
             _dbContext.ManOfTheSeries.RemoveRange(GetBySeriesIds(new List<long>{ seriesId }));
+            _dbContext.SaveChanges();
+        }
+
+        public void Merge(MergeRequest mergeRequest)
+        {
+            var manOfTheSeriesList = GetByPlayerId(mergeRequest.PlayerIdToMerge);
+            manOfTheSeriesList.ForEach(mots => mots.PlayerId = mergeRequest.OriginalPlayerId);
             _dbContext.SaveChanges();
         }
     }
