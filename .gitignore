@@ -2,4 +2,8 @@
 bin
 obj
 .envrc
-Properties/launchSettings.json
+publish
+Properties
+compile.log
+server.log
+migrations.log

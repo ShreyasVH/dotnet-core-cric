@@ -1,4 +1,4 @@
-
+mkdir -p Properties
 
 echo '{
   "$schema": "https://json.schemastore.org/launchsettings.json",
@@ -16,7 +16,7 @@ echo '{
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "http://localhost:17051",
+      "applicationUrl": "http://localhost:$PORT",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "MSSQL_IP": "'$MSSQL_IP'",
