@@ -200,5 +200,24 @@ namespace Com.Dotnet.Cric.Controllers
             
             return Ok(new Response("Success", true));
         }
+        
+        [HttpGet]
+        [Route("/cric/v1/players/search")]
+        public IActionResult Search(string keyword, int page, int limit)
+        {
+            var players = playerService.Search(keyword, page, limit);
+            var countryIds = players.Select(t => t.CountryId).ToList();
+            var countries = countryService.FindByIds(countryIds);
+            var countryMap = countries.ToDictionary(c => c.Id, c => c);
+
+            var playerResponses = players.Select(player => new PlayerMiniResponse(player, new CountryResponse(countryMap[player.CountryId]))).ToList();
+            var totalCount = 0;
+            if (page == 1)
+            {
+                totalCount = playerService.SearchCount(keyword);
+            }
+
+            return Ok(new Response(new PaginatedResponse<PlayerMiniResponse>(totalCount, playerResponses, page, limit)));
+        }
     }
 }

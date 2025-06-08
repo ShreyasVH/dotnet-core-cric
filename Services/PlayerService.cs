@@ -52,5 +52,15 @@ namespace Com.Dotnet.Cric.Services
         {
             playerRepository.Remove(id);
         }
+        
+        public List<Player> Search(string keyword, int page, int limit)
+        {
+            return playerRepository.Search(keyword, page, limit);
+        }
+
+        public int SearchCount(string keyword)
+        {
+            return playerRepository.SearchCount(keyword);
+        }
     }
 }

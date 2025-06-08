@@ -55,6 +55,16 @@ namespace Com.Dotnet.Cric.Repositories
             _dbContext.Players.Remove(GetById(id));
             _dbContext.SaveChanges();
         }
+        
+        public List<Player> Search(string keyword, int page, int limit)
+        {
+            return _dbContext.Players.Where(player => player.Name.ToLower().Contains(keyword.ToLower())).OrderBy(t => t.Name).Skip((page - 1) * limit).Take(limit).ToList();
+        }
+
+        public int SearchCount(string keyword)
+        {
+            return _dbContext.Players.Count(player => player.Name.ToLower().Contains(keyword.ToLower()));
+        }
 
     }
 }
