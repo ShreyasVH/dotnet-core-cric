@@ -19,7 +19,7 @@ namespace Com.Dotnet.Cric.Services
 		{
 			createRequest.Validate();
 
-			var existingStadium = stadiumRepository.GetByNameAndCountryId(createRequest.Name, createRequest.CountryId);
+			var existingStadium = stadiumRepository.GetByNameAndCountryIdAndCity(createRequest.Name, createRequest.CountryId, createRequest.City);
 			if (null != existingStadium)
 			{
 				throw new ConflictException("Stadium");

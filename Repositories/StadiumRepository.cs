@@ -24,9 +24,9 @@ namespace Com.Dotnet.Cric.Repositories
             return stadium;
         }
 
-        public Stadium GetByNameAndCountryId(string name, long countryId)
+        public Stadium GetByNameAndCountryIdAndCity(string name, long countryId, string city)
         {
-            return _dbContext.Stadiums.FirstOrDefault(s => s.Name == name && s.CountryId == countryId);
+            return _dbContext.Stadiums.FirstOrDefault(s => s.Name == name && s.CountryId == countryId && s.City == city);
         }
 
         public List<Stadium> GetAll(int page, int limit)
