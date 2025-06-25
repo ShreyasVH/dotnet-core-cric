@@ -18,7 +18,7 @@ namespace Com.Dotnet.Cric.Repositories
             var bowlingFigures = bowlingFigureRequests.Select(bowlingFigureRequest =>
                 new BowlingFigure(bowlingFigureRequest, playerToMatchPlayerMap)).ToList();
             _dbContext.BowlingFigures.AddRange(bowlingFigures);
-            _dbContext.SaveChanges();
+            //_dbContext.SaveChanges();
             return bowlingFigures;
         }
 

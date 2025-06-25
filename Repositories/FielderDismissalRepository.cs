@@ -30,7 +30,7 @@ namespace Com.Dotnet.Cric.Repositories
             }
             
             _dbContext.FielderDismissals.AddRange(fielderDismissals);
-            _dbContext.SaveChanges();
+            //_dbContext.SaveChanges();
             return fielderDismissals;
         }
 

@@ -19,7 +19,7 @@ namespace Com.Dotnet.Cric.Repositories
         {
             var battingScores = battingScoreRequests.Select(battingScoreRequest => new BattingScore(battingScoreRequest, playerToMatchPlayerMap)).ToList();
             _dbContext.BattingScores.AddRange(battingScores);
-            _dbContext.SaveChanges();
+            //_dbContext.SaveChanges();
             return battingScores;
         }
 

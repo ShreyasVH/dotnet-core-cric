@@ -22,7 +22,7 @@ namespace Com.Dotnet.Cric.Repositories
             }).ToList();
 
             _dbContext.WicketKeepers.AddRange(wicketKeepers);
-            _dbContext.SaveChanges();
+            //_dbContext.SaveChanges();
             
             return wicketKeepers;
         }

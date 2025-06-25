@@ -24,7 +24,7 @@ namespace Com.Dotnet.Cric.Repositories
                 TeamId = playerTeamMap[playerId]
             }).ToList();
             _dbContext.MatchPlayerMaps.AddRange(matchPlayerMaps);
-            _dbContext.SaveChanges();
+            //_dbContext.SaveChanges();
             return matchPlayerMaps;
         }
 

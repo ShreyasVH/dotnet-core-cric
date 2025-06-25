@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
+using Com.Dotnet.Cric.Data;
 using Microsoft.AspNetCore.Mvc;
 
 using Com.Dotnet.Cric.Exceptions;
@@ -35,8 +36,9 @@ namespace Com.Dotnet.Cric.Controllers
         private readonly WicketKeeperService _wicketKeeperService;
         private readonly ManOfTheMatchService _manOfTheMatchService;
         private readonly GameTypeService _gameTypeService;
+        private readonly AppDbContext _dbContext;
 
-        public MatchController(MatchService matchService, SeriesService seriesService, TeamService teamService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, StadiumService stadiumService, TeamTypeService teamTypeService, CountryService countryService, MatchPlayerMapService matchPlayerMapService, PlayerService playerService, BattingScoreService battingScoreService, DismissalModeService dismissalModeService, BowlingFigureService bowlingFigureService, FielderDismissalService fielderDismissalService, ExtrasTypeService extrasTypeService, ExtrasService extrasService, CaptainService captainService, WicketKeeperService wicketKeeperService, ManOfTheMatchService manOfTheMatchService, GameTypeService gameTypeService)
+        public MatchController(MatchService matchService, SeriesService seriesService, TeamService teamService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, StadiumService stadiumService, TeamTypeService teamTypeService, CountryService countryService, MatchPlayerMapService matchPlayerMapService, PlayerService playerService, BattingScoreService battingScoreService, DismissalModeService dismissalModeService, BowlingFigureService bowlingFigureService, FielderDismissalService fielderDismissalService, ExtrasTypeService extrasTypeService, ExtrasService extrasService, CaptainService captainService, WicketKeeperService wicketKeeperService, ManOfTheMatchService manOfTheMatchService, GameTypeService gameTypeService, AppDbContext dbContext)
         {
             _matchService = matchService;
             _seriesService = seriesService;
@@ -58,6 +60,7 @@ namespace Com.Dotnet.Cric.Controllers
             _wicketKeeperService = wicketKeeperService;
             _manOfTheMatchService = manOfTheMatchService;
             _gameTypeService = gameTypeService;
+            _dbContext = dbContext;
         }
 
         [HttpPost]
@@ -154,12 +157,15 @@ namespace Com.Dotnet.Cric.Controllers
             var bowlingFigureResponses = new List<BowlingFigureResponse>();
             var extrasResponses = new List<ExtrasResponse>();
 
-            using (var scope = new TransactionScope())
+            using (var transaction = _dbContext.Database.BeginTransaction())
             {
                 match = _matchService.Create(createRequest);
+                _dbContext.SaveChanges();
                 var matchPlayerMapList = _matchPlayerMapService.Add(match.Id, allPlayerIds, playerTeamMap);
+                _dbContext.SaveChanges();
                 var playerToMatchPlayerMap = matchPlayerMapList.ToDictionary(mpm => mpm.PlayerId, mpm => mpm.Id);
                 var battingScores = _battingScoreService.Add(createRequest.BattingScores, playerToMatchPlayerMap);
+                _dbContext.SaveChanges();
                 var dismissalModes = _dismissalModeService.GetAll();
                 var dismissalModeMap = dismissalModes.ToDictionary(dm => dm.Id, dm => dm);
                 var battingScoreMap = battingScores.ToDictionary(bs => bs.MatchPlayerId + "_" + bs.Innings,bs => bs);
@@ -240,8 +246,10 @@ namespace Com.Dotnet.Cric.Controllers
                 _captainService.Add(createRequest.Captains, playerToMatchPlayerMap);
                 _wicketKeeperService.Add(createRequest.WicketKeepers, playerToMatchPlayerMap);
                 _manOfTheMatchService.Add(createRequest.ManOfTheMatchList, playerToMatchPlayerMap);
+
+                _dbContext.SaveChanges();
                 
-                scope.Complete();
+                transaction.Commit();
             }
 
             var teamPlayerMap = new Dictionary<long, List<PlayerMiniResponse>>();

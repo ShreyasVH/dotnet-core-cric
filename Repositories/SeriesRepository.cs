@@ -20,7 +20,7 @@ namespace Com.Dotnet.Cric.Repositories
         {
             Series series = new Series(createRequest);
             _dbContext.Series.Add(series);
-            _dbContext.SaveChanges();
+            //_dbContext.SaveChanges();
             return series;
         }
 
@@ -46,7 +46,7 @@ namespace Com.Dotnet.Cric.Repositories
 
         public void Update(Series series)
         {
-            _dbContext.SaveChanges();
+            //_dbContext.SaveChanges();
         }
         
         public List<Series> GetByTourId(long tourId)
