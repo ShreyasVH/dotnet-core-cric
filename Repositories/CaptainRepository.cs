@@ -22,7 +22,7 @@ namespace Com.Dotnet.Cric.Repositories
             }).ToList();
 
             _dbContext.Captains.AddRange(captains);
-            _dbContext.SaveChanges();
+            //_dbContext.SaveChanges();
             
             return captains;
         }

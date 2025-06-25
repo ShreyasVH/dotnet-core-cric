@@ -20,7 +20,7 @@ namespace Com.Dotnet.Cric.Repositories
             var extrasList = extrasRequests.Select(extrasRequest => new Extras(matchId, extrasRequest)).ToList();
 
             _dbContext.Extras.AddRange(extrasList);
-            _dbContext.SaveChanges();
+            //_dbContext.SaveChanges();
             
             return extrasList;
         }

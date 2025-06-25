@@ -19,7 +19,7 @@ namespace Com.Dotnet.Cric.Repositories
         {
             List<ManOfTheSeries> manOfTheSeriesList = playerIds.Select(playerId => new ManOfTheSeries(seriesId, playerId)).ToList();
             _dbContext.ManOfTheSeries.AddRange(manOfTheSeriesList);
-            _dbContext.SaveChanges();
+            //_dbContext.SaveChanges();
         }
 
         public List<ManOfTheSeries> GetBySeriesIds(List<long> seriesIds)
@@ -36,7 +36,7 @@ namespace Com.Dotnet.Cric.Repositories
         {
             List<ManOfTheSeries> manOfTheSeriesList = _dbContext.ManOfTheSeries.Where(mots => mots.SeriesId == seriesId && playerIds.Contains(mots.PlayerId)).ToList();
             _dbContext.ManOfTheSeries.RemoveRange(manOfTheSeriesList);
-            _dbContext.SaveChanges();
+            //_dbContext.SaveChanges();
         }
 
         public void Remove(long seriesId)

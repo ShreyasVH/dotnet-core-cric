@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Transactions;
-
+using Com.Dotnet.Cric.Data;
 using Com.Dotnet.Cric.Models;
 using Com.Dotnet.Cric.Requests.Series;
 using Com.Dotnet.Cric.Responses;
@@ -30,8 +30,9 @@ namespace Com.Dotnet.Cric.Controllers
         private readonly StadiumService _stadiumService;
         private readonly ResultTypeService _resultTypeService;
         private readonly WinMarginTypeService _winMarginTypeService;
+        private readonly AppDbContext _dbContext;
 
-        public SeriesController(SeriesService seriesService, CountryService countryService, SeriesTypeService seriesTypeService, GameTypeService gameTypeService, TourService tourService, TeamService teamService, TeamTypeService teamTypeService, SeriesTeamsMapService seriesTeamsMapService, ManOfTheSeriesService manOfTheSeriesService, PlayerService playerService, MatchService matchService, StadiumService stadiumService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService)
+        public SeriesController(SeriesService seriesService, CountryService countryService, SeriesTypeService seriesTypeService, GameTypeService gameTypeService, TourService tourService, TeamService teamService, TeamTypeService teamTypeService, SeriesTeamsMapService seriesTeamsMapService, ManOfTheSeriesService manOfTheSeriesService, PlayerService playerService, MatchService matchService, StadiumService stadiumService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, AppDbContext dbContext)
         {
             this.seriesService = seriesService;
             this.countryService = countryService;
@@ -47,6 +48,7 @@ namespace Com.Dotnet.Cric.Controllers
             _stadiumService = stadiumService;
             _resultTypeService = resultTypeService;
             _winMarginTypeService = winMarginTypeService;
+            _dbContext = dbContext;
         }
 
         [HttpPost]
@@ -69,6 +71,23 @@ namespace Com.Dotnet.Cric.Controllers
             }
             
             countryIds.Add(createRequest.HomeCountryId);
+
+            var players = new List<Player>();
+            var manOfTheSeriesToAdd = new List<long>();
+            if (null != createRequest.ManOfTheSeriesList)
+            {
+                players = _playerService.GetByIds(createRequest.ManOfTheSeriesList);
+                if (players.Count != createRequest.ManOfTheSeriesList.Distinct().Count())
+                {
+                    throw new NotFoundException("Player");
+                }
+
+                manOfTheSeriesToAdd = createRequest.ManOfTheSeriesList;
+            }
+
+            var playerCountryIds = players.Select(player => player.CountryId).ToList();
+            countryIds.AddRange(playerCountryIds);
+            
             List<Country> countries = countryService.FindByIds(countryIds);
             Dictionary<long, Country> countryMap = countries.ToDictionary(country => country.Id, country => country);
             
@@ -97,11 +116,15 @@ namespace Com.Dotnet.Cric.Controllers
             }
 
             Series series;
-            using (var scope = new TransactionScope())
+            using (var transaction = _dbContext.Database.BeginTransaction())
             {
                 series = seriesService.Create(createRequest);
+                _dbContext.SaveChanges();
                 seriesTeamsMapService.Add(series.Id, createRequest.Teams);
-                scope.Complete();
+                _manOfTheSeriesService.Add(series.Id, manOfTheSeriesToAdd);
+
+                _dbContext.SaveChanges();
+                transaction.Commit();
             }
 
             List<TeamType> teamTypes = teamTypeService.FindByIds(teamTypeIds);
@@ -294,14 +317,16 @@ namespace Com.Dotnet.Cric.Controllers
                 throw new NotFoundException("Game type");
             }
 
-            using (var scope = new TransactionScope())
+            using (var transaction = _dbContext.Database.BeginTransaction())
             {
                 seriesService.Update(existingSeries, updateRequest);
                 seriesTeamsMapService.Add(id, teamsToAdd);
                 seriesTeamsMapService.Remove(id, teamsToDelete);
                 _manOfTheSeriesService.Add(id, manOfTheSeriesToAdd);
                 _manOfTheSeriesService.Remove(id, manOfTheSeriesToDelete);
-                scope.Complete();
+
+                _dbContext.SaveChanges();
+                transaction.Commit();
             }
 
             var teamTypes = teamTypeService.FindByIds(teamTypeIds);

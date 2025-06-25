@@ -22,7 +22,7 @@ namespace Com.Dotnet.Cric.Repositories
             }).ToList();
 
             _dbContext.ManOfTheMatch.AddRange(manOfTheMatchList);
-            _dbContext.SaveChanges();
+            //_dbContext.SaveChanges();
             
             return manOfTheMatchList;
         }
