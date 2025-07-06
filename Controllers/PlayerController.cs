@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
+using Com.Dotnet.Cric.Data;
 using Microsoft.AspNetCore.Mvc;
 
 using Com.Dotnet.Cric.Requests.Players;
@@ -21,6 +23,7 @@ namespace Com.Dotnet.Cric.Controllers
         private readonly FielderDismissalService _fielderDismissalService;
         private readonly ManOfTheSeriesService _manOfTheSeriesService;
         private readonly MatchPlayerMapService _matchPlayerMapService;
+        private readonly AppDbContext _dbContext;
 
         public PlayerController(
             PlayerService playerService,
@@ -29,7 +32,8 @@ namespace Com.Dotnet.Cric.Controllers
             BowlingFigureService bowlingFigureService,
             FielderDismissalService fielderDismissalService,
             ManOfTheSeriesService manOfTheSeriesService,
-            MatchPlayerMapService matchPlayerMapService
+            MatchPlayerMapService matchPlayerMapService,
+            AppDbContext dbContext
         )
         {
             this.playerService = playerService;
@@ -39,6 +43,7 @@ namespace Com.Dotnet.Cric.Controllers
             _fielderDismissalService = fielderDismissalService;
             _manOfTheSeriesService = manOfTheSeriesService;
             _matchPlayerMapService = matchPlayerMapService;
+            _dbContext = dbContext;
         }
 
         private List<PlayerMiniResponse> GetPlayerResponses(List<Player> players)
@@ -183,6 +188,11 @@ namespace Com.Dotnet.Cric.Controllers
         [Route("/cric/v1/players/merge")]
         public IActionResult Merge(MergeRequest mergeRequest)
         {
+            if (mergeRequest.OriginalPlayerId == mergeRequest.PlayerIdToMerge)
+            {
+                throw new BadRequestException("Same player given");
+            }
+            
             var player = playerService.GetById(mergeRequest.PlayerIdToMerge);
             if (null == player)
             {
@@ -195,12 +205,14 @@ namespace Com.Dotnet.Cric.Controllers
                 throw new NotFoundException("Original Player");
             }
 
-            using (var scope = new TransactionScope())
+            using (var transaction = _dbContext.Database.BeginTransaction())
             {
                 _manOfTheSeriesService.Merge(mergeRequest);
                 _matchPlayerMapService.Merge(mergeRequest);
                 playerService.Remove(mergeRequest.PlayerIdToMerge);                
-                scope.Complete();
+                _dbContext.SaveChanges();
+                
+                transaction.Commit();
             }
 
             

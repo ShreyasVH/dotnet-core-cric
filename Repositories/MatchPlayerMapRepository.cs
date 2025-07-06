@@ -48,7 +48,6 @@ namespace Com.Dotnet.Cric.Repositories
         {
             var matchPlayerMaps = GetByPlayerId(mergeRequest.PlayerIdToMerge);
             matchPlayerMaps.ForEach(mpm => mpm.PlayerId = mergeRequest.OriginalPlayerId);
-            _dbContext.SaveChanges();
         }
     }
 }
