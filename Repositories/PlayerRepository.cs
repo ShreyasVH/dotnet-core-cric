@@ -53,7 +53,6 @@ namespace Com.Dotnet.Cric.Repositories
         public void Remove(long id)
         {
             _dbContext.Players.Remove(GetById(id));
-            _dbContext.SaveChanges();
         }
         
         public List<Player> Search(string keyword, int page, int limit)

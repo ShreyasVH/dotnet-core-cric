@@ -49,7 +49,6 @@ namespace Com.Dotnet.Cric.Repositories
         {
             var manOfTheSeriesList = GetByPlayerId(mergeRequest.PlayerIdToMerge);
             manOfTheSeriesList.ForEach(mots => mots.PlayerId = mergeRequest.OriginalPlayerId);
-            _dbContext.SaveChanges();
         }
     }
 }
