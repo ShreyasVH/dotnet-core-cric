@@ -41,14 +41,9 @@ namespace dotnet.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Totals_TeamId",
+                name: "Totals_TeamId",
                 table: "Totals",
                 column: "TeamId");
-
-            migrationBuilder.CreateIndex(
-                name: "Match",
-                table: "Totals",
-                column: "MatchId");
 
             migrationBuilder.CreateIndex(
                 name: "UK_T_Match_Team_Innings",
