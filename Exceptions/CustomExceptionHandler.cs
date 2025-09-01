@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Com.Dotnet.Cric.Responses;
@@ -10,6 +11,8 @@ namespace Com.Dotnet.Cric.Exceptions
         {
             if (context.Exception is MyException exception)
             {
+                Console.WriteLine(exception.Description);
+                Console.WriteLine(exception.HttpStatusCode);
                 var response = new Response(exception.Description);
                 context.Result = new ObjectResult(response)
                 {

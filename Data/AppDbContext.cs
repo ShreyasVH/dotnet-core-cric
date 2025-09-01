@@ -42,6 +42,8 @@ namespace Com.Dotnet.Cric.Data
         
         public DbSet<WicketKeeper> WicketKeepers { get; set; }
         public DbSet<ManOfTheMatch> ManOfTheMatch { get; set; }
+        
+        public DbSet<Total> Totals { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -36,9 +36,10 @@ namespace Com.Dotnet.Cric.Controllers
         private readonly WicketKeeperService _wicketKeeperService;
         private readonly ManOfTheMatchService _manOfTheMatchService;
         private readonly GameTypeService _gameTypeService;
+        private readonly TotalsService _totalsService;
         private readonly AppDbContext _dbContext;
 
-        public MatchController(MatchService matchService, SeriesService seriesService, TeamService teamService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, StadiumService stadiumService, TeamTypeService teamTypeService, CountryService countryService, MatchPlayerMapService matchPlayerMapService, PlayerService playerService, BattingScoreService battingScoreService, DismissalModeService dismissalModeService, BowlingFigureService bowlingFigureService, FielderDismissalService fielderDismissalService, ExtrasTypeService extrasTypeService, ExtrasService extrasService, CaptainService captainService, WicketKeeperService wicketKeeperService, ManOfTheMatchService manOfTheMatchService, GameTypeService gameTypeService, AppDbContext dbContext)
+        public MatchController(MatchService matchService, SeriesService seriesService, TeamService teamService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, StadiumService stadiumService, TeamTypeService teamTypeService, CountryService countryService, MatchPlayerMapService matchPlayerMapService, PlayerService playerService, BattingScoreService battingScoreService, DismissalModeService dismissalModeService, BowlingFigureService bowlingFigureService, FielderDismissalService fielderDismissalService, ExtrasTypeService extrasTypeService, ExtrasService extrasService, CaptainService captainService, WicketKeeperService wicketKeeperService, ManOfTheMatchService manOfTheMatchService, GameTypeService gameTypeService, TotalsService totalsService, AppDbContext dbContext)
         {
             _matchService = matchService;
             _seriesService = seriesService;
@@ -60,6 +61,7 @@ namespace Com.Dotnet.Cric.Controllers
             _wicketKeeperService = wicketKeeperService;
             _manOfTheMatchService = manOfTheMatchService;
             _gameTypeService = gameTypeService;
+            _totalsService = totalsService;
             _dbContext = dbContext;
         }
 
@@ -246,6 +248,7 @@ namespace Com.Dotnet.Cric.Controllers
                 _captainService.Add(createRequest.Captains, playerToMatchPlayerMap);
                 _wicketKeeperService.Add(createRequest.WicketKeepers, playerToMatchPlayerMap);
                 _manOfTheMatchService.Add(createRequest.ManOfTheMatchList, playerToMatchPlayerMap);
+                _totalsService.Add(createRequest.Totals.Select(t => new Total(match.Id, t)).ToList());
 
                 _dbContext.SaveChanges();
                 
