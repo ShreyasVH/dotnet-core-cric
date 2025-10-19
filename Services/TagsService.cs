@@ -22,5 +22,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return tagsRepository.GetTotalCount();
         }
+        
+        public List<Tag> FindByIds(List<int> ids)
+        {
+            return tagsRepository.GetByIds(ids);
+        }
     }
 }

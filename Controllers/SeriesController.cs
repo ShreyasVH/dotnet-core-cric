@@ -32,9 +32,10 @@ namespace Com.Dotnet.Cric.Controllers
         private readonly ResultTypeService _resultTypeService;
         private readonly WinMarginTypeService _winMarginTypeService;
         private readonly TagMapService _tagMapService;
+        private readonly TagsService _tagsService;
         private readonly AppDbContext _dbContext;
 
-        public SeriesController(SeriesService seriesService, CountryService countryService, SeriesTypeService seriesTypeService, GameTypeService gameTypeService, TourService tourService, TeamService teamService, TeamTypeService teamTypeService, SeriesTeamsMapService seriesTeamsMapService, ManOfTheSeriesService manOfTheSeriesService, PlayerService playerService, MatchService matchService, StadiumService stadiumService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, TagMapService tagMapService, AppDbContext dbContext)
+        public SeriesController(SeriesService seriesService, CountryService countryService, SeriesTypeService seriesTypeService, GameTypeService gameTypeService, TourService tourService, TeamService teamService, TeamTypeService teamTypeService, SeriesTeamsMapService seriesTeamsMapService, ManOfTheSeriesService manOfTheSeriesService, PlayerService playerService, MatchService matchService, StadiumService stadiumService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, TagMapService tagMapService, TagsService tagsService, AppDbContext dbContext)
         {
             this.seriesService = seriesService;
             this.countryService = countryService;
@@ -51,6 +52,7 @@ namespace Com.Dotnet.Cric.Controllers
             _resultTypeService = resultTypeService;
             _winMarginTypeService = winMarginTypeService;
             _tagMapService = tagMapService;
+            _tagsService = tagsService;
             _dbContext = dbContext;
         }
 
@@ -418,8 +420,12 @@ namespace Com.Dotnet.Cric.Controllers
                     new StadiumResponse(stadium, new CountryResponse(countryMap[stadium.CountryId]))
                 );
             }).ToList();
+
+            var tagMaps = _tagMapService.Get(TagEntityType.SERIES.ToString(), id);
+            var tagIds = tagMaps.Select(tm => tm.TagId).ToList();
+            var tags = _tagsService.FindByIds(tagIds);
             
-            var seriesResponse = new SeriesDetailedResponse(series, seriesType, gameType, teamResponses, matchMiniResponses);
+            var seriesResponse = new SeriesDetailedResponse(series, seriesType, gameType, teamResponses, matchMiniResponses, tags);
             return Ok(new Response(seriesResponse));
         }
 

@@ -20,5 +20,10 @@ namespace Com.Dotnet.Cric.Repositories
             _dbContext.TagMap.AddRange(tagMaps);
             //_dbContext.SaveChanges();
         }
+        
+        public List<TagMap> Get(string entityType, int entityId)
+        {
+            return _dbContext.TagMap.Where(tm => tm.EntityType == entityType && tm.EntityId == entityId).ToList();
+        }
     }
 }
