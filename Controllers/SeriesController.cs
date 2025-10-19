@@ -9,6 +9,7 @@ using Com.Dotnet.Cric.Requests.Series;
 using Com.Dotnet.Cric.Responses;
 using Com.Dotnet.Cric.Services;
 using Com.Dotnet.Cric.Exceptions;
+using dotnet.Enums;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Com.Dotnet.Cric.Controllers
@@ -30,9 +31,10 @@ namespace Com.Dotnet.Cric.Controllers
         private readonly StadiumService _stadiumService;
         private readonly ResultTypeService _resultTypeService;
         private readonly WinMarginTypeService _winMarginTypeService;
+        private readonly TagMapService _tagMapService;
         private readonly AppDbContext _dbContext;
 
-        public SeriesController(SeriesService seriesService, CountryService countryService, SeriesTypeService seriesTypeService, GameTypeService gameTypeService, TourService tourService, TeamService teamService, TeamTypeService teamTypeService, SeriesTeamsMapService seriesTeamsMapService, ManOfTheSeriesService manOfTheSeriesService, PlayerService playerService, MatchService matchService, StadiumService stadiumService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, AppDbContext dbContext)
+        public SeriesController(SeriesService seriesService, CountryService countryService, SeriesTypeService seriesTypeService, GameTypeService gameTypeService, TourService tourService, TeamService teamService, TeamTypeService teamTypeService, SeriesTeamsMapService seriesTeamsMapService, ManOfTheSeriesService manOfTheSeriesService, PlayerService playerService, MatchService matchService, StadiumService stadiumService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, TagMapService tagMapService, AppDbContext dbContext)
         {
             this.seriesService = seriesService;
             this.countryService = countryService;
@@ -48,6 +50,7 @@ namespace Com.Dotnet.Cric.Controllers
             _stadiumService = stadiumService;
             _resultTypeService = resultTypeService;
             _winMarginTypeService = winMarginTypeService;
+            _tagMapService = tagMapService;
             _dbContext = dbContext;
         }
 
@@ -122,6 +125,7 @@ namespace Com.Dotnet.Cric.Controllers
                 _dbContext.SaveChanges();
                 seriesTeamsMapService.Add(series.Id, createRequest.Teams);
                 _manOfTheSeriesService.Add(series.Id, manOfTheSeriesToAdd);
+                _tagMapService.Add(TagEntityType.SERIES.ToString(), series.Id, createRequest.Tags);
 
                 _dbContext.SaveChanges();
                 transaction.Commit();
