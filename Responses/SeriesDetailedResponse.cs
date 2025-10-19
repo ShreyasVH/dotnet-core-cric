@@ -6,7 +6,7 @@ namespace Com.Dotnet.Cric.Responses
 {
     public class SeriesDetailedResponse
     {
-        public long Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public SeriesTypeResponse Type { get; set; }
         public GameTypeResponse GameType { get; set; }

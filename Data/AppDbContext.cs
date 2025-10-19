@@ -45,6 +45,10 @@ namespace Com.Dotnet.Cric.Data
         
         public DbSet<Total> Totals { get; set; }
 
+        public DbSet<Tag> Tags { get; set; }
+        
+        public DbSet<TagMap> TagMap { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Configure any additional model-related settings or relationships here
@@ -545,6 +549,24 @@ namespace Com.Dotnet.Cric.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
+            
+            modelBuilder.Entity<Tag>()
+                .HasIndex(t => new { t.Name })
+                .IsUnique();
+            
+            modelBuilder.Entity<TagMap>()
+                .HasOne(t => t.Tag)
+                .WithMany()
+                .HasForeignKey(t => t.TagId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TagMap>()
+                .HasIndex(t => new { t.EntityType, t.EntityId, t.TagId })
+                .IsUnique();
+
+            modelBuilder.Entity<TagMap>()
+                .HasIndex(t => t.TagId)
+                .HasDatabaseName("Tag");
         }
     }
 }

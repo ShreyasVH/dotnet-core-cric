@@ -149,7 +149,7 @@ namespace Com.Dotnet.Cric.Controllers
             var seriesTypeIds = new List<int>();
             var gameTypeIds = new List<int>();
             var tourIds = new List<long>();
-            var seriesIds = new List<long>();
+            var seriesIds = new List<int>();
 
             foreach (var series in seriesList)
             {
@@ -202,8 +202,8 @@ namespace Com.Dotnet.Cric.Controllers
         }
 
         [HttpPut]
-        [Route("/cric/v1/series/{id:long}")]
-        public IActionResult Create(long id, UpdateRequest updateRequest)
+        [Route("/cric/v1/series/{id:int}")]
+        public IActionResult Create(int id, UpdateRequest updateRequest)
         {
             var existingSeries = seriesService.GetById(id);
             if (null == existingSeries)
@@ -216,7 +216,7 @@ namespace Com.Dotnet.Cric.Controllers
             var manOfTheSeriesToDelete = new List<long>();
             var manOfTheSeriesToAdd = new List<long>();
             List<Team> teams;
-            var seriesTeamsMaps = seriesTeamsMapService.GetBySeriesIds(new List<long> {id});
+            var seriesTeamsMaps = seriesTeamsMapService.GetBySeriesIds(new List<int> {id});
             var existingTeamIds = new List<long>();
             foreach (var seriesTeamsMap in seriesTeamsMaps)
             {
@@ -253,7 +253,7 @@ namespace Com.Dotnet.Cric.Controllers
             countryIds.Add(updateRequest.HomeCountryId ?? existingSeries.HomeCountryId);
 
             List<Player> players;
-            var manOfTheSeriesList = _manOfTheSeriesService.GetBySeriesIds(new List<long> {id});
+            var manOfTheSeriesList = _manOfTheSeriesService.GetBySeriesIds(new List<int> {id});
             var existingPlayerIds = new List<long>();
             foreach (var manOfTheSeries in manOfTheSeriesList)
             {
@@ -339,8 +339,8 @@ namespace Com.Dotnet.Cric.Controllers
         }
 
         [HttpGet]
-        [Route("/cric/v1/series/{id:long}")]
-        public IActionResult GetById(long id)
+        [Route("/cric/v1/series/{id:int}")]
+        public IActionResult GetById(int id)
         {
             var series = seriesService.GetById(id);
             if (null == series)
@@ -351,7 +351,7 @@ namespace Com.Dotnet.Cric.Controllers
             var seriesType = seriesTypeService.FindById(series.TypeId);
             var gameType = gameTypeService.FindById(series.GameTypeId);
 
-            var seriesTeamsMaps = seriesTeamsMapService.GetBySeriesIds(new List<long> { id });
+            var seriesTeamsMaps = seriesTeamsMapService.GetBySeriesIds(new List<int> { id });
             var teamIds = seriesTeamsMaps.Select(stm => stm.TeamId).ToList();
             var teams = teamService.GetByIds(teamIds);
             var teamTypeIds = new List<int>();
@@ -420,8 +420,8 @@ namespace Com.Dotnet.Cric.Controllers
         }
 
         [HttpDelete]
-        [Route("/cric/v1/series/{id:long}")]
-        public IActionResult Remove(long id)
+        [Route("/cric/v1/series/{id:int}")]
+        public IActionResult Remove(int id)
         {
             var series = seriesService.GetById(id);
             if (null == series)

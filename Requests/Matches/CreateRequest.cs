@@ -5,7 +5,7 @@ namespace Com.Dotnet.Cric.Requests.Matches
 {
     public class CreateRequest
     {
-        public long SeriesId { get; set; }
+        public int SeriesId { get; set; }
         public long Team1Id { get; set; }
         public long Team2Id { get; set; }
         public long? TossWinnerId { get; set; }

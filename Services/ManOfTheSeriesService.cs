@@ -14,12 +14,12 @@ namespace Com.Dotnet.Cric.Services
             this._manOfTheSeriesRepository = manOfTheSeriesRepository;
         }
 
-        public void Add(long seriesId, List<long> playerId)
+        public void Add(int seriesId, List<long> playerId)
         {
             _manOfTheSeriesRepository.Add(seriesId, playerId);
         }
 
-        public List<ManOfTheSeries> GetBySeriesIds(List<long> seriesIds)
+        public List<ManOfTheSeries> GetBySeriesIds(List<int> seriesIds)
         {
             return _manOfTheSeriesRepository.GetBySeriesIds(seriesIds);
         }
@@ -29,7 +29,7 @@ namespace Com.Dotnet.Cric.Services
             _manOfTheSeriesRepository.Remove(seriesId, playerId);
         }
 
-        public void Remove(long seriesId)
+        public void Remove(int seriesId)
         {
             _manOfTheSeriesRepository.Remove(seriesId);
         }

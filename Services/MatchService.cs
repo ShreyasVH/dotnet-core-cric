@@ -28,7 +28,7 @@ namespace Com.Dotnet.Cric.Services
             return _matchRepository.Create(createRequest);
         }
 
-        public List<Match> GetBySeriesId(long seriesId)
+        public List<Match> GetBySeriesId(int seriesId)
         {
             return _matchRepository.GetBySeriesId(seriesId);
         }

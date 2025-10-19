@@ -10,7 +10,7 @@ namespace Com.Dotnet.Cric.Models
         public long Id { get; set; }
         [Required]
         [ForeignKey("Series")]
-        public long SeriesId { get; set; }
+        public int SeriesId { get; set; }
         
         public Series Series { get; set; }
         
@@ -26,7 +26,7 @@ namespace Com.Dotnet.Cric.Models
             // Parameterless constructor required by Entity Framework Core
         }
 
-        public SeriesTeamsMap(long seriesId, long teamId)
+        public SeriesTeamsMap(int seriesId, long teamId)
         {
             SeriesId = seriesId;
             TeamId = teamId;

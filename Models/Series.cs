@@ -9,7 +9,7 @@ namespace Com.Dotnet.Cric.Models
 {
     public class Series
     {
-        public long Id { get; set; }
+        public int Id { get; set; }
         [Required]
         [MaxLength(100)]
         public string Name { get; set; }

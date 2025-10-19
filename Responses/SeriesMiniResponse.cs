@@ -5,7 +5,7 @@ namespace Com.Dotnet.Cric.Responses
 {
     public class SeriesMiniResponse
     {
-        public long Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public long HomeCountryId { get; set; }
         public long TourId { get; set; }
