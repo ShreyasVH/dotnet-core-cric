@@ -450,6 +450,7 @@ namespace Com.Dotnet.Cric.Controllers
                 _manOfTheSeriesService.Remove(id);
                 seriesTeamsMapService.Remove(id);
                 seriesService.Remove(id);
+                _tagMapService.Remove(TagEntityType.SERIES.ToString(), id);
                 
                 scope.Complete();
             }

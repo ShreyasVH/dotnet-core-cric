@@ -25,5 +25,11 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.TagMap.Where(tm => tm.EntityType == entityType && tm.EntityId == entityId).ToList();
         }
+        
+        public void Remove(string entityType, int entityId)
+        {
+            _dbContext.TagMap.RemoveRange(Get(entityType, entityId));
+            _dbContext.SaveChanges();
+        }
     }
 }
