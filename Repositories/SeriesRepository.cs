@@ -39,7 +39,7 @@ namespace Com.Dotnet.Cric.Repositories
             return _dbContext.Series.Count();
         }
 
-        public Series GetById(long id)
+        public Series GetById(int id)
         {
             return _dbContext.Series.Find(id);
         }
@@ -54,7 +54,7 @@ namespace Com.Dotnet.Cric.Repositories
             return _dbContext.Series.Where(s => s.TourId == tourId).OrderByDescending(s => s.StartTime).ToList();
         }
 
-        public void Remove(long id)
+        public void Remove(int id)
         {
             _dbContext.Series.Remove(GetById(id));
             _dbContext.SaveChanges();

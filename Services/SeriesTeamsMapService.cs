@@ -13,12 +13,12 @@ namespace Com.Dotnet.Cric.Services
             this.seriesTeamsMapRepository = seriesTeamsMapRepository;
         }
 
-        public void Add(long seriesId, List<long> teamIds)
+        public void Add(int seriesId, List<long> teamIds)
         {
             seriesTeamsMapRepository.Add(seriesId, teamIds);
         }
 
-        public List<SeriesTeamsMap> GetBySeriesIds(List<long> seriesIds)
+        public List<SeriesTeamsMap> GetBySeriesIds(List<int> seriesIds)
         {
             return seriesTeamsMapRepository.GetBySeriesIds(seriesIds);
         }
@@ -28,7 +28,7 @@ namespace Com.Dotnet.Cric.Services
             seriesTeamsMapRepository.Remove(seriesId, teamIds);
         }
 
-        public void Remove(long seriesId)
+        public void Remove(int seriesId)
         {
             seriesTeamsMapRepository.Remove(seriesId);
         }

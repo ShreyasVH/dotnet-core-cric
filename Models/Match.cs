@@ -9,7 +9,7 @@ namespace Com.Dotnet.Cric.Models
         public int Id { get; set; }
 
         [Required]
-        public long SeriesId { get; set; }
+        public int SeriesId { get; set; }
         
         public Series Series { get; set; }
         

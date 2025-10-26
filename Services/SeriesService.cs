@@ -38,7 +38,7 @@ namespace Com.Dotnet.Cric.Services
             return seriesRepository.GetTotalCount();
         }
 
-        public Series GetById(long id)
+        public Series GetById(int id)
         {
             return seriesRepository.GetById(id);
         }
@@ -96,7 +96,7 @@ namespace Com.Dotnet.Cric.Services
             return seriesRepository.GetByTourId(tourId);
         }
 
-        public void Remove(long id)
+        public void Remove(int id)
         {
             seriesRepository.Remove(id);
         }

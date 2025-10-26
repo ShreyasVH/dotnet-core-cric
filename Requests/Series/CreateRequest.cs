@@ -16,6 +16,8 @@ namespace Com.Dotnet.Cric.Requests.Series
         
         public List<long> ManOfTheSeriesList { get; set; }
 
+        public List<int> Tags { get; set; }
+        
         public void Validate()
         {
             if (String.IsNullOrEmpty(Name))

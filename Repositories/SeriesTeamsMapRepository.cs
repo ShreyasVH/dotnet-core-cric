@@ -14,14 +14,14 @@ namespace Com.Dotnet.Cric.Repositories
             _dbContext = dbContext;
         }
 
-        public void Add(long seriesId, List<long> teamIds)
+        public void Add(int seriesId, List<long> teamIds)
         {
             var seriesTeamsMaps = teamIds.Select(teamId => new SeriesTeamsMap(seriesId, teamId)).ToList();
             _dbContext.SeriesTeamsMap.AddRange(seriesTeamsMaps);
             //_dbContext.SaveChanges();
         }
 
-        public List<SeriesTeamsMap> GetBySeriesIds(List<long> seriesIds)
+        public List<SeriesTeamsMap> GetBySeriesIds(List<int> seriesIds)
         {
             return _dbContext.SeriesTeamsMap.Where(seriesTeamsMap => seriesIds.Contains(seriesTeamsMap.SeriesId)).ToList();
         }
@@ -33,9 +33,9 @@ namespace Com.Dotnet.Cric.Repositories
             //_dbContext.SaveChanges();
         }
 
-        public void Remove(long seriesId)
+        public void Remove(int seriesId)
         {
-            _dbContext.SeriesTeamsMap.RemoveRange(GetBySeriesIds(new List<long> { seriesId }));
+            _dbContext.SeriesTeamsMap.RemoveRange(GetBySeriesIds(new List<int> { seriesId }));
             _dbContext.SaveChanges();
         }
     }

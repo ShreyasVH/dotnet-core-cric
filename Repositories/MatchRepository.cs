@@ -29,7 +29,7 @@ namespace Com.Dotnet.Cric.Repositories
             return _dbContext.Matches.FirstOrDefault(m => m.StadiumId == stadiumId && m.StartTime.Equals(startTime));
         }
 
-        public List<Match> GetBySeriesId(long seriesId)
+        public List<Match> GetBySeriesId(int seriesId)
         {
             return _dbContext.Matches.Where(m => m.SeriesId == seriesId).OrderBy(m => m.StartTime).ToList();
         }

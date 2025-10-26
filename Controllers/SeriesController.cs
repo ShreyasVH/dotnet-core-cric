@@ -9,6 +9,7 @@ using Com.Dotnet.Cric.Requests.Series;
 using Com.Dotnet.Cric.Responses;
 using Com.Dotnet.Cric.Services;
 using Com.Dotnet.Cric.Exceptions;
+using dotnet.Enums;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Com.Dotnet.Cric.Controllers
@@ -30,9 +31,11 @@ namespace Com.Dotnet.Cric.Controllers
         private readonly StadiumService _stadiumService;
         private readonly ResultTypeService _resultTypeService;
         private readonly WinMarginTypeService _winMarginTypeService;
+        private readonly TagMapService _tagMapService;
+        private readonly TagsService _tagsService;
         private readonly AppDbContext _dbContext;
 
-        public SeriesController(SeriesService seriesService, CountryService countryService, SeriesTypeService seriesTypeService, GameTypeService gameTypeService, TourService tourService, TeamService teamService, TeamTypeService teamTypeService, SeriesTeamsMapService seriesTeamsMapService, ManOfTheSeriesService manOfTheSeriesService, PlayerService playerService, MatchService matchService, StadiumService stadiumService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, AppDbContext dbContext)
+        public SeriesController(SeriesService seriesService, CountryService countryService, SeriesTypeService seriesTypeService, GameTypeService gameTypeService, TourService tourService, TeamService teamService, TeamTypeService teamTypeService, SeriesTeamsMapService seriesTeamsMapService, ManOfTheSeriesService manOfTheSeriesService, PlayerService playerService, MatchService matchService, StadiumService stadiumService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, TagMapService tagMapService, TagsService tagsService, AppDbContext dbContext)
         {
             this.seriesService = seriesService;
             this.countryService = countryService;
@@ -48,6 +51,8 @@ namespace Com.Dotnet.Cric.Controllers
             _stadiumService = stadiumService;
             _resultTypeService = resultTypeService;
             _winMarginTypeService = winMarginTypeService;
+            _tagMapService = tagMapService;
+            _tagsService = tagsService;
             _dbContext = dbContext;
         }
 
@@ -122,6 +127,7 @@ namespace Com.Dotnet.Cric.Controllers
                 _dbContext.SaveChanges();
                 seriesTeamsMapService.Add(series.Id, createRequest.Teams);
                 _manOfTheSeriesService.Add(series.Id, manOfTheSeriesToAdd);
+                _tagMapService.Add(TagEntityType.SERIES.ToString(), series.Id, createRequest.Tags);
 
                 _dbContext.SaveChanges();
                 transaction.Commit();
@@ -149,7 +155,7 @@ namespace Com.Dotnet.Cric.Controllers
             var seriesTypeIds = new List<int>();
             var gameTypeIds = new List<int>();
             var tourIds = new List<long>();
-            var seriesIds = new List<long>();
+            var seriesIds = new List<int>();
 
             foreach (var series in seriesList)
             {
@@ -202,8 +208,8 @@ namespace Com.Dotnet.Cric.Controllers
         }
 
         [HttpPut]
-        [Route("/cric/v1/series/{id:long}")]
-        public IActionResult Create(long id, UpdateRequest updateRequest)
+        [Route("/cric/v1/series/{id:int}")]
+        public IActionResult Create(int id, UpdateRequest updateRequest)
         {
             var existingSeries = seriesService.GetById(id);
             if (null == existingSeries)
@@ -216,7 +222,7 @@ namespace Com.Dotnet.Cric.Controllers
             var manOfTheSeriesToDelete = new List<long>();
             var manOfTheSeriesToAdd = new List<long>();
             List<Team> teams;
-            var seriesTeamsMaps = seriesTeamsMapService.GetBySeriesIds(new List<long> {id});
+            var seriesTeamsMaps = seriesTeamsMapService.GetBySeriesIds(new List<int> {id});
             var existingTeamIds = new List<long>();
             foreach (var seriesTeamsMap in seriesTeamsMaps)
             {
@@ -253,7 +259,7 @@ namespace Com.Dotnet.Cric.Controllers
             countryIds.Add(updateRequest.HomeCountryId ?? existingSeries.HomeCountryId);
 
             List<Player> players;
-            var manOfTheSeriesList = _manOfTheSeriesService.GetBySeriesIds(new List<long> {id});
+            var manOfTheSeriesList = _manOfTheSeriesService.GetBySeriesIds(new List<int> {id});
             var existingPlayerIds = new List<long>();
             foreach (var manOfTheSeries in manOfTheSeriesList)
             {
@@ -339,8 +345,8 @@ namespace Com.Dotnet.Cric.Controllers
         }
 
         [HttpGet]
-        [Route("/cric/v1/series/{id:long}")]
-        public IActionResult GetById(long id)
+        [Route("/cric/v1/series/{id:int}")]
+        public IActionResult GetById(int id)
         {
             var series = seriesService.GetById(id);
             if (null == series)
@@ -351,7 +357,7 @@ namespace Com.Dotnet.Cric.Controllers
             var seriesType = seriesTypeService.FindById(series.TypeId);
             var gameType = gameTypeService.FindById(series.GameTypeId);
 
-            var seriesTeamsMaps = seriesTeamsMapService.GetBySeriesIds(new List<long> { id });
+            var seriesTeamsMaps = seriesTeamsMapService.GetBySeriesIds(new List<int> { id });
             var teamIds = seriesTeamsMaps.Select(stm => stm.TeamId).ToList();
             var teams = teamService.GetByIds(teamIds);
             var teamTypeIds = new List<int>();
@@ -414,14 +420,18 @@ namespace Com.Dotnet.Cric.Controllers
                     new StadiumResponse(stadium, new CountryResponse(countryMap[stadium.CountryId]))
                 );
             }).ToList();
+
+            var tagMaps = _tagMapService.Get(TagEntityType.SERIES.ToString(), id);
+            var tagIds = tagMaps.Select(tm => tm.TagId).ToList();
+            var tags = _tagsService.FindByIds(tagIds);
             
-            var seriesResponse = new SeriesDetailedResponse(series, seriesType, gameType, teamResponses, matchMiniResponses);
+            var seriesResponse = new SeriesDetailedResponse(series, seriesType, gameType, teamResponses, matchMiniResponses, tags);
             return Ok(new Response(seriesResponse));
         }
 
         [HttpDelete]
-        [Route("/cric/v1/series/{id:long}")]
-        public IActionResult Remove(long id)
+        [Route("/cric/v1/series/{id:int}")]
+        public IActionResult Remove(int id)
         {
             var series = seriesService.GetById(id);
             if (null == series)
@@ -440,6 +450,7 @@ namespace Com.Dotnet.Cric.Controllers
                 _manOfTheSeriesService.Remove(id);
                 seriesTeamsMapService.Remove(id);
                 seriesService.Remove(id);
+                _tagMapService.Remove(TagEntityType.SERIES.ToString(), id);
                 
                 scope.Complete();
             }

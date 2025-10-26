@@ -6,7 +6,7 @@ namespace Com.Dotnet.Cric.Responses
 {
     public class SeriesDetailedResponse
     {
-        public long Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public SeriesTypeResponse Type { get; set; }
         public GameTypeResponse GameType { get; set; }
@@ -14,13 +14,15 @@ namespace Com.Dotnet.Cric.Responses
         public List<TeamResponse> Teams { get; set; }
 
         public List<MatchMiniResponse> Matches { get; set; }
+        
+        public List<Tag> Tags { get; set; }
 
         public SeriesDetailedResponse()
         {
 
         }
 
-        public SeriesDetailedResponse(Series series, SeriesType seriesType, GameType gameType, List<TeamResponse> teams, List<MatchMiniResponse> matches)
+        public SeriesDetailedResponse(Series series, SeriesType seriesType, GameType gameType, List<TeamResponse> teams, List<MatchMiniResponse> matches, List<Tag> tags)
         {
             Id = series.Id;
             Name = series.Name;
@@ -29,6 +31,7 @@ namespace Com.Dotnet.Cric.Responses
             StartTime = series.StartTime;
             Teams = teams;
             Matches = matches;
+            Tags = tags;
         }
     }
 }
