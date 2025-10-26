@@ -513,6 +513,7 @@ namespace Com.Dotnet.Cric.Controllers
                 _battingScoreService.Remove(matchPlayerIds);
                 _bowlingFigureService.Remove(matchPlayerIds);
                 _matchPlayerMapService.Remove(id);
+                _totalsService.Remove(id);
                 _matchService.Remove(id);
                 
                 scope.Complete();

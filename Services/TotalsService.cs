@@ -19,5 +19,10 @@ namespace Com.Dotnet.Cric.Services
         {
             _totalsRepository.Add(totals);
         }
+        
+        public void Remove(int matchId)
+        {
+            _totalsRepository.Remove(matchId);
+        }
     }
 }
