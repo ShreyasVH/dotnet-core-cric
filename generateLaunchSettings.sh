@@ -16,7 +16,7 @@ echo '{
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "http://localhost:$PORT",
+      "applicationUrl": "http://localhost:'$PORT'",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "MSSQL_IP": "'$MSSQL_IP'",
