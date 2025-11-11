@@ -186,6 +186,8 @@ namespace Com.Dotnet.Cric.Repositories
 
             query += " order by " + string.Join(", ", sortList);
 
+            query += " offset " + filterRequest.Offset + " rows fetch next " + Math.Min(30, filterRequest.Count) + " rows only";
+
             var countResult = ExecuteQuery(countQuery);
             statsResponse.Count = Convert.ToInt32(countResult[0].GetValueOrDefault("count", 0));
 
