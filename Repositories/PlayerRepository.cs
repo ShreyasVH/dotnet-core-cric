@@ -217,6 +217,109 @@ namespace Com.Dotnet.Cric.Repositories
             statsResponse.Stats = statList;
             return statsResponse;
         }
+        
+        public StatsResponse GetBowlingStats(FilterRequest filterRequest)
+        {
+            var statsResponse = new StatsResponse();
+            var statList = new List<Dictionary<string, string>>();
+            
+            var countQuery = "select count(distinct p.Id) as count from BowlingFigures bf " +
+                                "inner join MatchPlayerMaps mpm on mpm.Id = bf.MatchPlayerId " +
+                                "inner join Players p on p.Id = mpm.PlayerId " +
+                                "inner join Matches m on m.Id = mpm.MatchId " +
+                                "inner join Series s on s.Id = m.SeriesId " +
+                                "inner join Stadiums st on st.Id = m.StadiumId " +
+                                "inner join Teams t on t.Id = mpm.TeamId";
+            
+            var query = "select p.Id as playerId, p.Name AS name, sum(bf.Wickets) AS wickets, sum(bf.Runs) as runs, count(0) AS innings, sum(bf.Balls) AS balls, sum(bf.Maidens) AS maidens, count((case when ((bf.Wickets >= 5) and (bf.Wickets < 10)) then 1 end)) AS fifers, count((case when (bf.Wickets = 10) then 1 end)) AS tenWickets from BowlingFigures bf " +
+                        "inner join MatchPlayerMaps mpm on mpm.Id = bf.MatchPlayerId " +
+                        "inner join Players p on p.Id = mpm.PlayerId " +
+                        "inner join Matches m on m.Id = mpm.MatchId " +
+                        "inner join Series s on s.Id = m.SeriesId " +
+                        "inner join Stadiums st on st.Id = m.StadiumId " +
+                        "inner join Teams t on t.Id = mpm.TeamId";
+            
+            var whereQueryParts = new List<string>();
+            foreach (var (field, valueList) in filterRequest.Filters)
+            {
+                var fieldNameWithTablePrefix = GetFieldNameWithTablePrefix(field);
+                if (!string.IsNullOrEmpty(fieldNameWithTablePrefix) && !valueList.IsNullOrEmpty())
+                {
+                    whereQueryParts.Add(fieldNameWithTablePrefix + " in (" + string.Join(", ", valueList) + ")");
+                }
+            }
+
+            foreach (var (field, rangeValues) in filterRequest.RangeFilters)
+            {
+                var fieldNameWithTablePrefix = GetFieldNameWithTablePrefix(field);
+                if (!string.IsNullOrEmpty(fieldNameWithTablePrefix) && !rangeValues.IsNullOrEmpty())
+                {
+                    if (rangeValues.ContainsKey("from"))
+                    {
+                        whereQueryParts.Add(fieldNameWithTablePrefix + " >= " + rangeValues["from"]);
+                    }
+                    
+                    if (rangeValues.ContainsKey("to"))
+                    {
+                        whereQueryParts.Add(fieldNameWithTablePrefix + " <= " + rangeValues["to"]);
+                    }
+                }
+            }
+            
+            if (!whereQueryParts.IsNullOrEmpty())
+            {
+                countQuery += " where " + string.Join(" and ", whereQueryParts);
+                query += " where " + string.Join(" and ", whereQueryParts);
+            }
+
+            query += " group by p.Id, p.Name";
+
+            var sortList = new List<string>();
+            foreach (var (field, value) in filterRequest.SortMap)
+            {
+                var sortFieldName = GetFieldNameForDisplay(field);
+                if (!sortFieldName.IsNullOrEmpty())
+                {
+                    sortList.Add(GetFieldNameForDisplay(field) + " " + value);
+                }
+            }
+
+            if (sortList.IsNullOrEmpty())
+            {
+                sortList.Add(GetFieldNameForDisplay("wickets") + " desc");
+            }
+
+            query += " order by " + string.Join(", ", sortList);
+
+            query += " offset " + filterRequest.Offset + " rows fetch next " + Math.Min(30, filterRequest.Count) + " rows only";
+
+            var countResult = ExecuteQuery(countQuery);
+            statsResponse.Count = Convert.ToInt32(countResult[0].GetValueOrDefault("count", 0));
+
+            var result = ExecuteQuery(query);
+            foreach (var row in result)
+            {
+                var innings = Convert.ToInt32(row.GetValueOrDefault("innings", 0));
+                if (innings <= 0) continue;
+                var stats = new Dictionary<string, string>
+                {
+                    {"id", row.GetValueOrDefault("playerId", "").ToString()},
+                    {"name", row.GetValueOrDefault("name", "").ToString()},
+                    {"innings", innings.ToString()},
+                    {"wickets", row.GetValueOrDefault("wickets", "").ToString()},
+                    {"runs", row.GetValueOrDefault("runs", "").ToString()},
+                    {"balls", row.GetValueOrDefault("balls", "").ToString()},
+                    {"maidens", row.GetValueOrDefault("maidens", "").ToString()},
+                    {"fifers", row.GetValueOrDefault("fifers", "").ToString()},
+                    {"tenWickets", row.GetValueOrDefault("tenWickets", "").ToString()}
+                };
+                
+                statList.Add(stats);
+            }
+
+            statsResponse.Stats = statList;
+            return statsResponse;
+        }
 
     }
 }
