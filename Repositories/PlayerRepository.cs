@@ -321,5 +321,111 @@ namespace Com.Dotnet.Cric.Repositories
             return statsResponse;
         }
 
+        public StatsResponse GetFieldingStats(FilterRequest filterRequest)
+        {
+            var statsResponse = new StatsResponse();
+            var statList = new List<Dictionary<string, string>>();
+            
+            var countQuery = "select count(distinct p.Id) as count from FielderDismissals fd " +
+                             "inner join MatchPlayerMaps mpm on mpm.Id = fd.MatchPlayerId " +
+                             "inner join Players p on p.Id = mpm.PlayerId " +
+                             "inner join Matches m on m.Id = mpm.MatchId " +
+                             "inner join Series s on s.Id = m.SeriesId " +
+                             "inner join Stadiums st on st.Id = m.StadiumId " +
+                             "inner join BattingScores bs on bs.Id = fd.ScoreId " +
+                             "inner join DismissalModes dm on dm.Id = bs.DismissalModeId " +
+                             "inner join Teams t on t.Id = mpm.TeamId " +
+                             "left join WicketKeepers wk on wk.MatchPlayerId = fd.MatchPlayerId";
+            
+            var query = "select p.Id as playerId, p.Name AS name, SUM(case when dm.Name = 'Caught' and wk.Id is null then 1 else 0 end) as fielderCatches, SUM(case when dm.Name = 'Caught' and wk.Id is not null then 1 else 0 end) as keeperCatches, SUM(case when dm.Name = 'Stumped' then 1 else 0 end) as stumpings, SUM(case when dm.Name = 'Run Out' then 1 else 0 end) as runOuts from FielderDismissals fd " +
+                        "inner join MatchPlayerMaps mpm on mpm.Id = fd.MatchPlayerId " +
+                        "inner join Players p on p.Id = mpm.PlayerId " +
+                        "inner join Matches m on m.Id = mpm.MatchId " +
+                        "inner join Series s on s.Id = m.SeriesId " +
+                        "inner join Stadiums st on st.Id = m.StadiumId " +
+                        "inner join BattingScores bs on bs.Id = fd.ScoreId " +
+                        "inner join DismissalModes dm on dm.Id = bs.DismissalModeId " +
+                        "inner join Teams t on t.Id = mpm.TeamId " +
+                        "left join WicketKeepers wk on wk.MatchPlayerId = fd.MatchPlayerId";
+            
+            var whereQueryParts = new List<string>()
+            {
+                GetFieldNameWithTablePrefix("playerName") + " != 'sub'"
+            };
+            foreach (var (field, valueList) in filterRequest.Filters)
+            {
+                var fieldNameWithTablePrefix = GetFieldNameWithTablePrefix(field);
+                if (!string.IsNullOrEmpty(fieldNameWithTablePrefix) && !valueList.IsNullOrEmpty())
+                {
+                    whereQueryParts.Add(fieldNameWithTablePrefix + " in (" + string.Join(", ", valueList) + ")");
+                }
+            }
+
+            foreach (var (field, rangeValues) in filterRequest.RangeFilters)
+            {
+                var fieldNameWithTablePrefix = GetFieldNameWithTablePrefix(field);
+                if (!string.IsNullOrEmpty(fieldNameWithTablePrefix) && !rangeValues.IsNullOrEmpty())
+                {
+                    if (rangeValues.ContainsKey("from"))
+                    {
+                        whereQueryParts.Add(fieldNameWithTablePrefix + " >= " + rangeValues["from"]);
+                    }
+                    
+                    if (rangeValues.ContainsKey("to"))
+                    {
+                        whereQueryParts.Add(fieldNameWithTablePrefix + " <= " + rangeValues["to"]);
+                    }
+                }
+            }
+            
+            if (!whereQueryParts.IsNullOrEmpty())
+            {
+                countQuery += " where " + string.Join(" and ", whereQueryParts);
+                query += " where " + string.Join(" and ", whereQueryParts);
+            }
+
+            query += " group by p.Id, p.Name";
+
+            var sortList = new List<string>();
+            foreach (var (field, value) in filterRequest.SortMap)
+            {
+                var sortFieldName = GetFieldNameForDisplay(field);
+                if (!sortFieldName.IsNullOrEmpty())
+                {
+                    sortList.Add(GetFieldNameForDisplay(field) + " " + value);
+                }
+            }
+
+            if (sortList.IsNullOrEmpty())
+            {
+                sortList.Add(GetFieldNameForDisplay("fielderCatches") + " desc");
+            }
+
+            query += " order by " + string.Join(", ", sortList);
+
+            query += " offset " + filterRequest.Offset + " rows fetch next " + Math.Min(30, filterRequest.Count) + " rows only";
+
+            var countResult = ExecuteQuery(countQuery);
+            statsResponse.Count = Convert.ToInt32(countResult[0].GetValueOrDefault("count", 0));
+
+            var result = ExecuteQuery(query);
+            foreach (var row in result)
+            {
+                var stats = new Dictionary<string, string>
+                {
+                    {"id", row.GetValueOrDefault("playerId", "").ToString()},
+                    {"name", row.GetValueOrDefault("name", "").ToString()},
+                    {"fielderCatches", row.GetValueOrDefault("fielderCatches", "").ToString()},
+                    {"keeperCatches", row.GetValueOrDefault("keeperCatches", "").ToString()},
+                    {"stumpings", row.GetValueOrDefault("stumpings", "").ToString()},
+                    {"runOuts", row.GetValueOrDefault("runOuts", "").ToString()}
+                };
+                
+                statList.Add(stats);
+            }
+
+            statsResponse.Stats = statList;
+            return statsResponse;
+        }
     }
 }

@@ -28,6 +28,10 @@ namespace Com.Dotnet.Cric.Services
             {
                 statsResponse = _playerRepository.GetBowlingStats(filterRequest);
             }
+            else if ("fielding" == filterRequest.Type)
+            {
+                statsResponse = _playerRepository.GetFieldingStats(filterRequest);
+            }
 
             return statsResponse;
         }
