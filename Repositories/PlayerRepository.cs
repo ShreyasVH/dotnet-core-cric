@@ -12,8 +12,6 @@ namespace Com.Dotnet.Cric.Repositories
 {
     public class PlayerRepository: CustomRepository
     {
-        private readonly AppDbContext _dbContext;
-
         public PlayerRepository(AppDbContext dbContext): base(dbContext)
         {
             
