@@ -9,6 +9,7 @@ using Com.Dotnet.Cric.Models;
 using Com.Dotnet.Cric.Requests.Matches;
 using Com.Dotnet.Cric.Responses;
 using Com.Dotnet.Cric.Services;
+using dotnet.Enums;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Com.Dotnet.Cric.Controllers
@@ -37,9 +38,11 @@ namespace Com.Dotnet.Cric.Controllers
         private readonly ManOfTheMatchService _manOfTheMatchService;
         private readonly GameTypeService _gameTypeService;
         private readonly TotalsService _totalsService;
+        private readonly TagMapService _tagMapService;
+        private readonly TagsService _tagsService;
         private readonly AppDbContext _dbContext;
 
-        public MatchController(MatchService matchService, SeriesService seriesService, TeamService teamService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, StadiumService stadiumService, TeamTypeService teamTypeService, CountryService countryService, MatchPlayerMapService matchPlayerMapService, PlayerService playerService, BattingScoreService battingScoreService, DismissalModeService dismissalModeService, BowlingFigureService bowlingFigureService, FielderDismissalService fielderDismissalService, ExtrasTypeService extrasTypeService, ExtrasService extrasService, CaptainService captainService, WicketKeeperService wicketKeeperService, ManOfTheMatchService manOfTheMatchService, GameTypeService gameTypeService, TotalsService totalsService, AppDbContext dbContext)
+        public MatchController(MatchService matchService, SeriesService seriesService, TeamService teamService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, StadiumService stadiumService, TeamTypeService teamTypeService, CountryService countryService, MatchPlayerMapService matchPlayerMapService, PlayerService playerService, BattingScoreService battingScoreService, DismissalModeService dismissalModeService, BowlingFigureService bowlingFigureService, FielderDismissalService fielderDismissalService, ExtrasTypeService extrasTypeService, ExtrasService extrasService, CaptainService captainService, WicketKeeperService wicketKeeperService, ManOfTheMatchService manOfTheMatchService, GameTypeService gameTypeService, TotalsService totalsService, TagMapService tagMapService, TagsService tagsService, AppDbContext dbContext)
         {
             _matchService = matchService;
             _seriesService = seriesService;
@@ -62,6 +65,8 @@ namespace Com.Dotnet.Cric.Controllers
             _manOfTheMatchService = manOfTheMatchService;
             _gameTypeService = gameTypeService;
             _totalsService = totalsService;
+            _tagMapService = tagMapService;
+            _tagsService = tagsService;
             _dbContext = dbContext;
         }
 
@@ -153,6 +158,8 @@ namespace Com.Dotnet.Cric.Controllers
 
             var countries = _countryService.FindByIds(countryIds);
             var countryMap = countries.ToDictionary(c => c.Id, c => c);
+
+            var tags = _tagsService.FindByIds(createRequest.Tags);
 
             Match match = null;
             var battingScoreResponses = new List<BattingScoreResponse>();
@@ -249,6 +256,7 @@ namespace Com.Dotnet.Cric.Controllers
                 _wicketKeeperService.Add(createRequest.WicketKeepers, playerToMatchPlayerMap);
                 _manOfTheMatchService.Add(createRequest.ManOfTheMatchList, playerToMatchPlayerMap);
                 _totalsService.Add(createRequest.Totals.Select(t => new Total(match.Id, t)).ToList());
+                _tagMapService.Add(TagEntityType.MATCH.ToString(), match.Id, createRequest.Tags);
 
                 _dbContext.SaveChanges();
                 
@@ -283,7 +291,8 @@ namespace Com.Dotnet.Cric.Controllers
                 extrasResponses,
                 createRequest.ManOfTheMatchList,
                 createRequest.Captains,
-                createRequest.WicketKeepers
+                createRequest.WicketKeepers,
+                tags
             );
 
             return Created("", new Response(matchResponse));
@@ -469,6 +478,10 @@ namespace Com.Dotnet.Cric.Controllers
                     new TeamResponse(bowlingTeam, new CountryResponse(countryMap[bowlingTeam.CountryId]), new TeamTypeResponse(teamTypeMap[bowlingTeam.TypeId]))
                 );
             }).ToList();
+            
+            var tagMaps = _tagMapService.Get(TagEntityType.MATCH.ToString(), id);
+            var tagIds = tagMaps.Select(tm => tm.TagId).ToList();
+            var tags = _tagsService.FindByIds(tagIds);
 
             var matchResponse = new MatchResponse(
                 match,
@@ -485,7 +498,8 @@ namespace Com.Dotnet.Cric.Controllers
                 extrasResponses,
                 manOfTheMatchList.Select(motm => matchPlayerToPlayerMap[motm.MatchPlayerId]).ToList(),
                 captains.Select(c => matchPlayerToPlayerMap[c.MatchPlayerId]).ToList(),
-                wicketKeepers.Select(wk => matchPlayerToPlayerMap[wk.MatchPlayerId]).ToList()
+                wicketKeepers.Select(wk => matchPlayerToPlayerMap[wk.MatchPlayerId]).ToList(),
+                tags
             );
 
             return Ok(new Response(matchResponse));
@@ -505,6 +519,7 @@ namespace Com.Dotnet.Cric.Controllers
             {
                 var matchPlayerMaps = _matchPlayerMapService.GetByMatchId(id);
                 var matchPlayerIds = matchPlayerMaps.Select(mpm => mpm.Id).ToList();
+                _tagMapService.Remove(TagEntityType.MATCH.ToString(), id);
                 _extrasService.Remove(id);
                 _captainService.Remove(matchPlayerIds);
                 _wicketKeeperService.Remove(matchPlayerIds);

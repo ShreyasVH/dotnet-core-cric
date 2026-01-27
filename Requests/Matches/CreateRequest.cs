@@ -27,6 +27,7 @@ namespace Com.Dotnet.Cric.Requests.Matches
         public List<long> WicketKeepers { get; set; }
         public List<long> ManOfTheMatchList { get; set; }
         public List<TotalRequestEntry> Totals { get; set; }
+        public List<int> Tags { get; set; }
 
         public void Validate()
         {
