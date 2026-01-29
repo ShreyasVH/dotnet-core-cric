@@ -28,8 +28,9 @@ namespace Com.Dotnet.Cric.Responses
         public List<PlayerMiniResponse> Captains { get; set; }
         public List<PlayerMiniResponse> WicketKeepers { get; set; }
         public List<PlayerMiniResponse> ManOfTheMatchList { get; set; }
+        public List<Tag> Tags { get; set; }
 
-        public MatchResponse(Match match, Series series, GameType gameType, TeamResponse team1, TeamResponse team2, ResultTypeResponse resultType, WinMarginTypeResponse winMarginType, StadiumResponse stadium, Dictionary<long, List<PlayerMiniResponse>> players, List<BattingScoreResponse> battingScores, List<BowlingFigureResponse> bowlingFigures, List<ExtrasResponse> extras, List<long> manOfTheMatchList, List<long> captainIds, List<long> wicketKeeperIds)
+        public MatchResponse(Match match, Series series, GameType gameType, TeamResponse team1, TeamResponse team2, ResultTypeResponse resultType, WinMarginTypeResponse winMarginType, StadiumResponse stadium, Dictionary<long, List<PlayerMiniResponse>> players, List<BattingScoreResponse> battingScores, List<BowlingFigureResponse> bowlingFigures, List<ExtrasResponse> extras, List<long> manOfTheMatchList, List<long> captainIds, List<long> wicketKeeperIds, List<Tag> tags)
         {
             Id = match.Id;
             Series = new SeriesMiniResponse(series, gameType);
@@ -69,6 +70,7 @@ namespace Com.Dotnet.Cric.Responses
             Captains = captainIds.Select(playerId => playerMap[playerId]).ToList();
             WicketKeepers = wicketKeeperIds.Select(playerId => playerMap[playerId]).ToList();
             ManOfTheMatchList = manOfTheMatchList.Select(playerId => playerMap[playerId]).ToList();
+            Tags = tags;
         }
     }
 }
