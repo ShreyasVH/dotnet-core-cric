@@ -27,9 +27,11 @@ namespace Com.Dotnet.Cric.Repositories
         {
             var stats = new Dictionary<string, Dictionary<string, int>>();
 
-            var query = "SELECT dm.Name AS dismissalMode, COUNT(*) AS count, gt.Name as gameType FROM BattingScores bs INNER JOIN MatchPlayerMaps mpm on mpm.Id = bs.MatchPlayerId inner join DismissalModes dm ON mpm.PlayerId = :playerId AND bs.DismissalModeId IS NOT NULL and dm.Id = bs.DismissalModeId and dm.Name != 'Retired Hurt' inner join Matches m on m.Id = mpm.MatchId and m.IsOfficial = 1 inner join Series s on s.Id = m.SeriesId inner join Teams t on t.Id = mpm.TeamId inner join TeamTypes tt on tt.Id = t.TypeId and tt.Name = 'International' inner join GameTypes gt on gt.Id = s.GameTypeId GROUP BY gt.Name, dm.Name";
-            query = query.Replace(":playerId", playerId.ToString());
-            var result = ExecuteQuery(query);
+            var query = @"SELECT dm.Name AS dismissalMode, COUNT(*) AS count, gt.Name as gameType FROM BattingScores bs INNER JOIN MatchPlayerMaps mpm on mpm.Id = bs.MatchPlayerId inner join DismissalModes dm ON mpm.PlayerId = @playerId AND bs.DismissalModeId IS NOT NULL and dm.Id = bs.DismissalModeId and dm.Name != 'Retired Hurt' inner join Matches m on m.Id = mpm.MatchId and m.IsOfficial = 1 inner join Series s on s.Id = m.SeriesId inner join Teams t on t.Id = mpm.TeamId inner join TeamTypes tt on tt.Id = t.TypeId and tt.Name = 'International' inner join GameTypes gt on gt.Id = s.GameTypeId GROUP BY gt.Name, dm.Name";
+            var result = ExecuteQuery(query, new Dictionary<string, object>
+            {
+                ["@playerId"] = playerId
+            });
 
             foreach (var row in result)
             {
