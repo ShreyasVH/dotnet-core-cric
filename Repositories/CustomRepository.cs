@@ -50,44 +50,57 @@ namespace Com.Dotnet.Cric.Repositories
         {
             var result = new List<Dictionary<string, object>>();
 
-            using var connection = _dbContext.Database.GetDbConnection();
-            if (connection.State != ConnectionState.Open)
+            var connection = _dbContext.Database.GetDbConnection();
+            var shouldClose = connection.State != ConnectionState.Open;
+
+            if (shouldClose)
             {
                 connection.Open();
             }
 
-            using var command = connection.CreateCommand();
-            command.CommandText = query;
-            command.CommandType = CommandType.Text;
-
-            if (parameters != null)
+            try
             {
-                foreach (var parameter in parameters)
+                using var command = connection.CreateCommand();
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                if (parameters != null)
                 {
-                    var dbParameter = command.CreateParameter();
-                    dbParameter.ParameterName = parameter.Key;
-                    dbParameter.Value = parameter.Value ?? DBNull.Value;
-                    command.Parameters.Add(dbParameter);
+                    foreach (var parameter in parameters)
+                    {
+                        var dbParameter = command.CreateParameter();
+                        dbParameter.ParameterName = parameter.Key;
+                        dbParameter.Value = parameter.Value ?? DBNull.Value;
+                        command.Parameters.Add(dbParameter);
+                    }
                 }
-            }
 
-            using var reader = command.ExecuteReader();
+                using var reader = command.ExecuteReader();
 
-            var fieldCount = reader.FieldCount;
-            var columnNames = new string[fieldCount];
-            for (var i = 0; i < fieldCount; i++)
-            {
-                columnNames[i] = reader.GetName(i);
-            }
-
-            while (reader.Read())
-            {
-                var row = new Dictionary<string, object>(fieldCount, StringComparer.OrdinalIgnoreCase);
+                var fieldCount = reader.FieldCount;
+                var columnNames = new string[fieldCount];
                 for (var i = 0; i < fieldCount; i++)
                 {
-                    row[columnNames[i]] = reader.IsDBNull(i) ? null! : reader.GetValue(i);
+                    columnNames[i] = reader.GetName(i);
                 }
-                result.Add(row);
+
+                while (reader.Read())
+                {
+                    var row = new Dictionary<string, object>(fieldCount, StringComparer.OrdinalIgnoreCase);
+                    for (var i = 0; i < fieldCount; i++)
+                    {
+                        row[columnNames[i]] = reader.IsDBNull(i) ? null! : reader.GetValue(i);
+                    }
+
+                    result.Add(row);
+                }
+            }
+            finally
+            {
+                if (shouldClose && connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
             }
 
             return result;
