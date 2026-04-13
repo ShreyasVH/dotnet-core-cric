@@ -167,19 +167,19 @@ namespace Com.Dotnet.Cric.Controllers
                 playerResponse.BowlingStats = bowlingStatsFinal;
             }
             
-            // var fieldingStatsMap = _fielderDismissalService.GetFieldingStats(id);
-            // if (fieldingStatsMap.Any())
-            // {
-            //     var fieldingStatsMapFinal = new Dictionary<string, FieldingStats>();
-            //     
-            //     foreach(var (gameType, gameTypeFieldingStats) in fieldingStatsMap)
-            //     {
-            //         var fieldingStats = new FieldingStats(gameTypeFieldingStats);
-            //         fieldingStatsMapFinal[gameType] = fieldingStats;
-            //     }
-            //
-            //     playerResponse.FieldingStats = fieldingStatsMapFinal;
-            // }
+            var fieldingStatsMap = _fielderDismissalService.GetFieldingStats(id);
+            if (fieldingStatsMap.Any())
+            {
+                var fieldingStatsMapFinal = new Dictionary<string, FieldingStats>();
+                
+                foreach(var (gameType, gameTypeFieldingStats) in fieldingStatsMap)
+                {
+                    var fieldingStats = new FieldingStats(gameTypeFieldingStats);
+                    fieldingStatsMapFinal[gameType] = fieldingStats;
+                }
+            
+                playerResponse.FieldingStats = fieldingStatsMapFinal;
+            }
 
             return Ok(new Response(playerResponse));
         }
