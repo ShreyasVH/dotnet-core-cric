@@ -112,10 +112,10 @@ namespace Com.Dotnet.Cric.Controllers
                 {
                     dismissalCount += count;
                 }
-            
+
                 dismissalCountMap[gameType] = dismissalCount;
             }
-            
+
             var basicBattingStats = _battingScoreService.GetBattingStats(id);
             if (basicBattingStats.Any())
             {
@@ -125,32 +125,32 @@ namespace Com.Dotnet.Cric.Controllers
                     var gameType = battingStatsEntry.Key;
                     var battingStats = new BattingStats(battingStatsEntry.Value);
                     battingStats.NotOuts = battingStats.Innings - dismissalCountMap.GetValueOrDefault(gameType, 0);
-            
+
                     if (dismissalCountMap.GetValueOrDefault(gameType, 0) > 0)
                     {
                         battingStats.Average = battingStats.Runs * 1.0 / dismissalCountMap[gameType];
                     }
-            
+
                     if (battingStats.Balls > 0)
                     {
                         battingStats.StrikeRate = battingStats.Runs * 100.0 / battingStats.Balls;
                     }
-            
+
                     battingStatsMap[gameType] = battingStats;
                 }
-            
+
                 playerResponse.BattingStats = battingStatsMap;
             }
-            
+
             var basicBowlingStatsMap = _bowlingFigureService.GetBowlingStats(id);
             if (basicBowlingStatsMap.Any())
             {
                 var bowlingStatsFinal = new Dictionary<string, BowlingStats>();
-            
+
                 foreach (var (gameType, gameTypeBowlingStats) in basicBowlingStatsMap)
                 {
                     var bowlingStats = new BowlingStats(gameTypeBowlingStats);
-            
+
                     if (bowlingStats.Balls > 0)
                     {
                         bowlingStats.Economy = bowlingStats.Runs * 6.0 / bowlingStats.Balls;
@@ -166,7 +166,7 @@ namespace Com.Dotnet.Cric.Controllers
                 
                 playerResponse.BowlingStats = bowlingStatsFinal;
             }
-            
+
             var fieldingStatsMap = _fielderDismissalService.GetFieldingStats(id);
             if (fieldingStatsMap.Any())
             {
@@ -177,7 +177,7 @@ namespace Com.Dotnet.Cric.Controllers
                     var fieldingStats = new FieldingStats(gameTypeFieldingStats);
                     fieldingStatsMapFinal[gameType] = fieldingStats;
                 }
-            
+
                 playerResponse.FieldingStats = fieldingStatsMapFinal;
             }
 
