@@ -27,9 +27,11 @@ namespace Com.Dotnet.Cric.Repositories
         {
             var stats = new Dictionary<string, Dictionary<string, int>>();
 
-            var query = "SELECT dm.Name AS dismissalMode, COUNT(*) AS count, gt.Name as gameType FROM BattingScores bs INNER JOIN MatchPlayerMaps mpm on mpm.Id = bs.MatchPlayerId inner join DismissalModes dm ON mpm.PlayerId = :playerId AND bs.DismissalModeId IS NOT NULL and dm.Id = bs.DismissalModeId and dm.Name != 'Retired Hurt' inner join Matches m on m.Id = mpm.MatchId and m.IsOfficial = 1 inner join Series s on s.Id = m.SeriesId inner join Teams t on t.Id = mpm.TeamId inner join TeamTypes tt on tt.Id = t.TypeId and tt.Name = 'International' inner join GameTypes gt on gt.Id = s.GameTypeId GROUP BY gt.Name, dm.Name";
-            query = query.Replace(":playerId", playerId.ToString());
-            var result = ExecuteQuery(query);
+            var query = @"SELECT dm.Name AS dismissalMode, COUNT(*) AS count, gt.Name as gameType FROM BattingScores bs INNER JOIN MatchPlayerMaps mpm on mpm.Id = bs.MatchPlayerId inner join DismissalModes dm ON mpm.PlayerId = @playerId AND bs.DismissalModeId IS NOT NULL and dm.Id = bs.DismissalModeId and dm.Name != 'Retired Hurt' inner join Matches m on m.Id = mpm.MatchId and m.IsOfficial = 1 inner join Series s on s.Id = m.SeriesId inner join Teams t on t.Id = mpm.TeamId inner join TeamTypes tt on tt.Id = t.TypeId and tt.Name = 'International' inner join GameTypes gt on gt.Id = s.GameTypeId GROUP BY gt.Name, dm.Name";
+            var result = ExecuteQuery(query, new Dictionary<string, object>
+            {
+                ["@playerId"] = playerId
+            });
 
             foreach (var row in result)
             {
@@ -51,9 +53,11 @@ namespace Com.Dotnet.Cric.Repositories
         {
             var statsFinal = new Dictionary<string, Dictionary<string, int>>();
 
-            var query = "SELECT COUNT(*) AS innings, SUM(Runs) AS runs, SUM(Balls) AS balls, SUM(Fours) AS fours, SUM(Sixes) AS sixes, MAX(Runs) AS highest, gt.Name as gameType, count(CASE WHEN (bs.Runs >= 50 and bs.Runs < 100) then 1 end) as fifties, count(CASE WHEN (bs.Runs >= 100 and bs.Runs < 200) then 1 end) as hundreds, count(CASE WHEN (bs.Runs >= 200 and bs.Runs < 300) then 1 end) as twoHundreds, count(CASE WHEN (bs.Runs >= 300 and bs.Runs < 400) then 1 end) as threeHundreds, count(CASE WHEN (bs.Runs >= 400 and bs.Runs < 500) then 1 end) as fourHundreds FROM BattingScores bs inner join MatchPlayerMaps mpm on mpm.PlayerId = :playerId and  mpm.Id = bs.MatchPlayerId inner join Matches m on m.Id = mpm.MatchId and m.IsOfficial = 1 inner join Series s on s.Id = m.SeriesId inner join Teams t on t.Id = mpm.TeamId inner join TeamTypes tt on tt.Id = t.TypeId and tt.Name = 'International' inner join GameTypes gt on gt.Id = s.GameTypeId group by gt.Name";
-            query = query.Replace(":playerId", playerId.ToString());
-            var result = ExecuteQuery(query);
+            var query = @"SELECT COUNT(*) AS innings, SUM(Runs) AS runs, SUM(Balls) AS balls, SUM(Fours) AS fours, SUM(Sixes) AS sixes, MAX(Runs) AS highest, gt.Name as gameType, count(CASE WHEN (bs.Runs >= 50 and bs.Runs < 100) then 1 end) as fifties, count(CASE WHEN (bs.Runs >= 100 and bs.Runs < 200) then 1 end) as hundreds, count(CASE WHEN (bs.Runs >= 200 and bs.Runs < 300) then 1 end) as twoHundreds, count(CASE WHEN (bs.Runs >= 300 and bs.Runs < 400) then 1 end) as threeHundreds, count(CASE WHEN (bs.Runs >= 400 and bs.Runs < 500) then 1 end) as fourHundreds FROM BattingScores bs inner join MatchPlayerMaps mpm on mpm.PlayerId = @playerId and  mpm.Id = bs.MatchPlayerId inner join Matches m on m.Id = mpm.MatchId and m.IsOfficial = 1 inner join Series s on s.Id = m.SeriesId inner join Teams t on t.Id = mpm.TeamId inner join TeamTypes tt on tt.Id = t.TypeId and tt.Name = 'International' inner join GameTypes gt on gt.Id = s.GameTypeId group by gt.Name";
+            var result = ExecuteQuery(query, new Dictionary<string, object>
+            {
+                ["@playerId"] = playerId
+            });
 
             foreach (var row in result)
             {

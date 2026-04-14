@@ -55,7 +55,7 @@ namespace Com.Dotnet.Cric.Repositories
         {
             var years = new List<int>();
             var sql = "SELECT DISTINCT (YEAR(StartTime)) AS year FROM Tours ORDER BY year DESC";
-            var result = ExecuteQuery(sql);
+            var result = ExecuteQuery(sql, null);
 
             foreach (var row in result)
             {

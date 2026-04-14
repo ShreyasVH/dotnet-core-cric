@@ -26,9 +26,11 @@ namespace Com.Dotnet.Cric.Repositories
         {
             var statsFinal = new Dictionary<string, Dictionary<string, int>>();
 
-            var query = "SELECT COUNT(*) AS innings, SUM(Balls) AS balls, SUM(Maidens) AS maidens, SUM(Runs) AS runs, SUM(Wickets) AS wickets, gt.Name AS gameType, COUNT(CASE WHEN (bf.Wickets >= 5 and bf.Wickets < 10) then 1 end) as fifers, COUNT(CASE WHEN (bf.Wickets = 10) then 1 end) as tenWickets FROM BowlingFigures bf inner join MatchPlayerMaps mpm on mpm.Id = bf.MatchPlayerId and mpm.PlayerId = :playerId INNER JOIN matches m ON m.Id = mpm.MatchId INNER JOIN Series s ON s.Id = m.SeriesId and m.IsOfficial = 1 inner join Teams t on t.Id = mpm.TeamId inner join TeamTypes tt on tt.Id = t.TypeId and tt.Name = 'INTERNATIONAL' inner join GameTypes gt on gt.Id = s.GameTypeId GROUP BY gt.Name";
-            query = query.Replace(":playerId", playerId.ToString());
-            var result = ExecuteQuery(query);
+            var query = @"SELECT COUNT(*) AS innings, SUM(Balls) AS balls, SUM(Maidens) AS maidens, SUM(Runs) AS runs, SUM(Wickets) AS wickets, gt.Name AS gameType, COUNT(CASE WHEN (bf.Wickets >= 5 and bf.Wickets < 10) then 1 end) as fifers, COUNT(CASE WHEN (bf.Wickets = 10) then 1 end) as tenWickets FROM BowlingFigures bf inner join MatchPlayerMaps mpm on mpm.Id = bf.MatchPlayerId and mpm.PlayerId = @playerId INNER JOIN matches m ON m.Id = mpm.MatchId INNER JOIN Series s ON s.Id = m.SeriesId and m.IsOfficial = 1 inner join Teams t on t.Id = mpm.TeamId inner join TeamTypes tt on tt.Id = t.TypeId and tt.Name = 'INTERNATIONAL' inner join GameTypes gt on gt.Id = s.GameTypeId GROUP BY gt.Name";
+            var result = ExecuteQuery(query, new Dictionary<string, object>
+            {
+                ["@playerId"] = playerId
+            });
 
             foreach (var row in result)
             {

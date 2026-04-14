@@ -186,10 +186,10 @@ namespace Com.Dotnet.Cric.Repositories
 
             query += " offset " + filterRequest.Offset + " rows fetch next " + Math.Min(30, filterRequest.Count) + " rows only";
 
-            var countResult = ExecuteQuery(countQuery);
+            var countResult = ExecuteQuery(countQuery, null);
             statsResponse.Count = Convert.ToInt32(countResult[0].GetValueOrDefault("count", 0));
 
-            var result = ExecuteQuery(query);
+            var result = ExecuteQuery(query, null);
             foreach (var row in result)
             {
                 var innings = Convert.ToInt32(row.GetValueOrDefault("innings", 0));
@@ -291,10 +291,10 @@ namespace Com.Dotnet.Cric.Repositories
 
             query += " offset " + filterRequest.Offset + " rows fetch next " + Math.Min(30, filterRequest.Count) + " rows only";
 
-            var countResult = ExecuteQuery(countQuery);
+            var countResult = ExecuteQuery(countQuery, null);
             statsResponse.Count = Convert.ToInt32(countResult[0].GetValueOrDefault("count", 0));
 
-            var result = ExecuteQuery(query);
+            var result = ExecuteQuery(query, null);
             foreach (var row in result)
             {
                 var innings = Convert.ToInt32(row.GetValueOrDefault("innings", 0));
@@ -403,10 +403,10 @@ namespace Com.Dotnet.Cric.Repositories
 
             query += " offset " + filterRequest.Offset + " rows fetch next " + Math.Min(30, filterRequest.Count) + " rows only";
 
-            var countResult = ExecuteQuery(countQuery);
+            var countResult = ExecuteQuery(countQuery, null);
             statsResponse.Count = Convert.ToInt32(countResult[0].GetValueOrDefault("count", 0));
 
-            var result = ExecuteQuery(query);
+            var result = ExecuteQuery(query, null);
             foreach (var row in result)
             {
                 var stats = new Dictionary<string, string>
