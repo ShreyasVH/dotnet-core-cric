@@ -29,5 +29,10 @@ namespace Com.Dotnet.Cric.Repositories
         {
             return _dbContext.Tags.Where(c => ids.Contains(c.Id)).ToList();
         }
+        
+        public List<Tag> GetByType(string type)
+        {
+            return _dbContext.Tags.Where(t => type.Equals(t.Type)).ToList();
+        }
     }
 }

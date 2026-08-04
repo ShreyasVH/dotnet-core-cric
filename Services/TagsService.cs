@@ -27,5 +27,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return tagsRepository.GetByIds(ids);
         }
+        
+        public List<Tag> FindByType(string type)
+        {
+            return tagsRepository.GetByType(type);
+        }
     }
 }
