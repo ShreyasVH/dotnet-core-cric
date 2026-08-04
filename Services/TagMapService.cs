@@ -32,5 +32,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return tagMapRepository.Get(entityId, tagIds);
         }
+        
+        public void Remove(int entityId, List<int> tagIds)
+        {
+            tagMapRepository.Remove(entityId, tagIds);
+        }
     }
 }

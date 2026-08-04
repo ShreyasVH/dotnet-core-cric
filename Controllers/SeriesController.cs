@@ -446,13 +446,16 @@ namespace Com.Dotnet.Cric.Controllers
             {
                 throw new ConflictException("Matches still exist");
             }
+            
+            var seriesTags = _tagsService.FindByType(nameof(TagEntityType.SERIES));
+            var seriesTagIds = seriesTags.Select(t => t.Id).ToList();
 
             using (var scope = new TransactionScope())
             {
                 _manOfTheSeriesService.Remove(id);
                 seriesTeamsMapService.Remove(id);
                 seriesService.Remove(id);
-                _tagMapService.Remove(TagEntityType.SERIES.ToString(), id);
+                _tagMapService.Remove(id, seriesTagIds);
                 
                 scope.Complete();
             }
