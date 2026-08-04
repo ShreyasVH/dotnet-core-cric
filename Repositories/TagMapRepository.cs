@@ -31,5 +31,16 @@ namespace Com.Dotnet.Cric.Repositories
             _dbContext.TagMap.RemoveRange(Get(entityType, entityId));
             _dbContext.SaveChanges();
         }
+        
+        public List<TagMap> Get(int entityId, List<int> tagIds)
+        {
+            return _dbContext.TagMap.Where(tm => tm.EntityId == entityId && tagIds.Contains(tm.TagId)).ToList();
+        }
+        
+        public void Remove(int entityId, List<int> tagIds)
+        {
+            _dbContext.TagMap.RemoveRange(Get(entityId, tagIds));
+            _dbContext.SaveChanges();
+        }
     }
 }

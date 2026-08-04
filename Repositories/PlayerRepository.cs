@@ -78,6 +78,7 @@ namespace Com.Dotnet.Cric.Repositories
                 "series" => "s.Id",
                 "year" => "YEAR(m.StartTime)",
                 "playerName" => "p.Name",
+                "seriesTags" => "tm.TagId",
                 _ => ""
             };
 
@@ -131,6 +132,12 @@ namespace Com.Dotnet.Cric.Repositories
                     "inner join Series s on s.Id = m.SeriesId " +
                     "inner join Stadiums st on st.Id = m.StadiumId " +
                     "inner join Teams t on t.Id = mpm.TeamId";
+
+            if (filterRequest.Filters.ContainsKey("seriesTags"))
+            {
+                query += " left join TagMap tm on tm.EntityId = s.Id";
+                countQuery += " left join TagMap tm on tm.EntityId = s.Id";
+            }
             
             var whereQueryParts = new List<string>();
             foreach (var (field, valueList) in filterRequest.Filters)
@@ -236,6 +243,12 @@ namespace Com.Dotnet.Cric.Repositories
                         "inner join Series s on s.Id = m.SeriesId " +
                         "inner join Stadiums st on st.Id = m.StadiumId " +
                         "inner join Teams t on t.Id = mpm.TeamId";
+            
+            if (filterRequest.Filters.ContainsKey("seriesTags"))
+            {
+                query += " left join TagMap tm on tm.EntityId = s.Id";
+                countQuery += " left join TagMap tm on tm.EntityId = s.Id";
+            }
             
             var whereQueryParts = new List<string>();
             foreach (var (field, valueList) in filterRequest.Filters)
@@ -345,6 +358,12 @@ namespace Com.Dotnet.Cric.Repositories
                         "inner join DismissalModes dm on dm.Id = bs.DismissalModeId " +
                         "inner join Teams t on t.Id = mpm.TeamId " +
                         "left join WicketKeepers wk on wk.MatchPlayerId = fd.MatchPlayerId";
+            
+            if (filterRequest.Filters.ContainsKey("seriesTags"))
+            {
+                query += " left join TagMap tm on tm.EntityId = s.Id";
+                countQuery += " left join TagMap tm on tm.EntityId = s.Id";
+            }
             
             var whereQueryParts = new List<string>()
             {

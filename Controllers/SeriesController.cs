@@ -421,9 +421,11 @@ namespace Com.Dotnet.Cric.Controllers
                 );
             }).ToList();
 
-            var tagMaps = _tagMapService.Get(TagEntityType.SERIES.ToString(), id);
+            var seriesTags = _tagsService.FindByType(nameof(TagEntityType.SERIES));
+            var seriesTagIds = seriesTags.Select(t => t.Id).ToList();
+            var tagMaps = _tagMapService.Get(id, seriesTagIds);
             var tagIds = tagMaps.Select(tm => tm.TagId).ToList();
-            var tags = _tagsService.FindByIds(tagIds);
+            var tags = seriesTags.Where(t => tagIds.Contains(t.Id)).ToList();
             
             var seriesResponse = new SeriesDetailedResponse(series, seriesType, gameType, teamResponses, matchMiniResponses, tags);
             return Ok(new Response(seriesResponse));
@@ -444,13 +446,16 @@ namespace Com.Dotnet.Cric.Controllers
             {
                 throw new ConflictException("Matches still exist");
             }
+            
+            var seriesTags = _tagsService.FindByType(nameof(TagEntityType.SERIES));
+            var seriesTagIds = seriesTags.Select(t => t.Id).ToList();
 
             using (var scope = new TransactionScope())
             {
                 _manOfTheSeriesService.Remove(id);
                 seriesTeamsMapService.Remove(id);
                 seriesService.Remove(id);
-                _tagMapService.Remove(TagEntityType.SERIES.ToString(), id);
+                _tagMapService.Remove(id, seriesTagIds);
                 
                 scope.Complete();
             }
