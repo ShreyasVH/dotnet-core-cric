@@ -516,12 +516,15 @@ namespace Com.Dotnet.Cric.Controllers
             {
                 throw new NotFoundException("Match");
             }
+            
+            var matchTags = _tagsService.FindByType(nameof(TagEntityType.MATCH));
+            var matchTagIds = matchTags.Select(t => t.Id).ToList();
 
             using (var scope = new TransactionScope())
             {
                 var matchPlayerMaps = _matchPlayerMapService.GetByMatchId(id);
                 var matchPlayerIds = matchPlayerMaps.Select(mpm => mpm.Id).ToList();
-                _tagMapService.Remove(TagEntityType.MATCH.ToString(), id);
+                _tagMapService.Remove(id, matchTagIds);
                 _extrasService.Remove(id);
                 _captainService.Remove(matchPlayerIds);
                 _wicketKeeperService.Remove(matchPlayerIds);
