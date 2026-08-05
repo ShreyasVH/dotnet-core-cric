@@ -256,7 +256,7 @@ namespace Com.Dotnet.Cric.Controllers
                 _wicketKeeperService.Add(createRequest.WicketKeepers, playerToMatchPlayerMap);
                 _manOfTheMatchService.Add(createRequest.ManOfTheMatchList, playerToMatchPlayerMap);
                 _totalsService.Add(createRequest.Totals.Select(t => new Total(match.Id, t)).ToList());
-                _tagMapService.Add(TagEntityType.MATCH.ToString(), match.Id, createRequest.Tags);
+                _tagMapService.Add(match.Id, createRequest.Tags);
 
                 _dbContext.SaveChanges();
                 

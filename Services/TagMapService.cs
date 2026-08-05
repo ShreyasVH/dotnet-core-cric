@@ -13,14 +13,9 @@ namespace Com.Dotnet.Cric.Services
             this.tagMapRepository = tagMapRepository;
         }
 
-        public void Add(string entityType, int entityId, List<int> tagIds)
+        public void Add(int entityId, List<int> tagIds)
         {
-            tagMapRepository.Add(entityType, entityId, tagIds);
-        }
-        
-        public void Remove(string entityType, int entityId)
-        {
-            tagMapRepository.Remove(entityType, entityId);
+            tagMapRepository.Add(entityId, tagIds);
         }
         
         public List<TagMap> Get(int entityId, List<int> tagIds)

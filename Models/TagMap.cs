@@ -8,9 +8,6 @@ namespace Com.Dotnet.Cric.Models
     public class TagMap
     {
         public long Id { get; set; }
-        [Required]
-        [MaxLength(100)]
-        public string EntityType { get; set; }
         
         [Required]
         public int EntityId { get; set; }
@@ -27,9 +24,8 @@ namespace Com.Dotnet.Cric.Models
             // Parameterless constructor required by Entity Framework Core
         }
 
-        public TagMap(string entityType, int entityId, int tagId)
+        public TagMap(int entityId, int tagId)
         {
-            EntityType = entityType;
             EntityId = entityId;
             TagId = tagId;
         }

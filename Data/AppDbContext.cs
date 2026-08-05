@@ -561,7 +561,7 @@ namespace Com.Dotnet.Cric.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<TagMap>()
-                .HasIndex(t => new { t.EntityType, t.EntityId, t.TagId })
+                .HasIndex(t => new { t.EntityId, t.TagId })
                 .IsUnique();
 
             modelBuilder.Entity<TagMap>()
