@@ -256,7 +256,7 @@ namespace Com.Dotnet.Cric.Controllers
                 _wicketKeeperService.Add(createRequest.WicketKeepers, playerToMatchPlayerMap);
                 _manOfTheMatchService.Add(createRequest.ManOfTheMatchList, playerToMatchPlayerMap);
                 _totalsService.Add(createRequest.Totals.Select(t => new Total(match.Id, t)).ToList());
-                _tagMapService.Add(TagEntityType.MATCH.ToString(), match.Id, createRequest.Tags);
+                _tagMapService.Add(match.Id, createRequest.Tags);
 
                 _dbContext.SaveChanges();
                 
@@ -479,9 +479,11 @@ namespace Com.Dotnet.Cric.Controllers
                 );
             }).ToList();
             
-            var tagMaps = _tagMapService.Get(TagEntityType.MATCH.ToString(), id);
+            var matchTags = _tagsService.FindByType(nameof(TagEntityType.MATCH));
+            var matchTagIds = matchTags.Select(t => t.Id).ToList();
+            var tagMaps = _tagMapService.Get(id, matchTagIds);
             var tagIds = tagMaps.Select(tm => tm.TagId).ToList();
-            var tags = _tagsService.FindByIds(tagIds);
+            var tags = matchTags.Where(t => tagIds.Contains(t.Id)).ToList();
 
             var matchResponse = new MatchResponse(
                 match,
@@ -514,12 +516,15 @@ namespace Com.Dotnet.Cric.Controllers
             {
                 throw new NotFoundException("Match");
             }
+            
+            var matchTags = _tagsService.FindByType(nameof(TagEntityType.MATCH));
+            var matchTagIds = matchTags.Select(t => t.Id).ToList();
 
             using (var scope = new TransactionScope())
             {
                 var matchPlayerMaps = _matchPlayerMapService.GetByMatchId(id);
                 var matchPlayerIds = matchPlayerMaps.Select(mpm => mpm.Id).ToList();
-                _tagMapService.Remove(TagEntityType.MATCH.ToString(), id);
+                _tagMapService.Remove(id, matchTagIds);
                 _extrasService.Remove(id);
                 _captainService.Remove(matchPlayerIds);
                 _wicketKeeperService.Remove(matchPlayerIds);

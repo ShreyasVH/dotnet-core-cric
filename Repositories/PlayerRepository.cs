@@ -79,6 +79,7 @@ namespace Com.Dotnet.Cric.Repositories
                 "year" => "YEAR(m.StartTime)",
                 "playerName" => "p.Name",
                 "seriesTags" => "tm.TagId",
+                "matchTags" => "tmm.TagId",
                 _ => ""
             };
 
@@ -137,6 +138,12 @@ namespace Com.Dotnet.Cric.Repositories
             {
                 query += " left join TagMap tm on tm.EntityId = s.Id";
                 countQuery += " left join TagMap tm on tm.EntityId = s.Id";
+            }
+            
+            if (filterRequest.Filters.ContainsKey("matchTags"))
+            {
+                query += " left join TagMap tmm on tmm.EntityId = m.Id";
+                countQuery += " left join TagMap tmm on tmm.EntityId = m.Id";
             }
             
             var whereQueryParts = new List<string>();
@@ -248,6 +255,12 @@ namespace Com.Dotnet.Cric.Repositories
             {
                 query += " left join TagMap tm on tm.EntityId = s.Id";
                 countQuery += " left join TagMap tm on tm.EntityId = s.Id";
+            }
+            
+            if (filterRequest.Filters.ContainsKey("matchTags"))
+            {
+                query += " left join TagMap tmm on tmm.EntityId = m.Id";
+                countQuery += " left join TagMap tmm on tmm.EntityId = m.Id";
             }
             
             var whereQueryParts = new List<string>();
@@ -363,6 +376,12 @@ namespace Com.Dotnet.Cric.Repositories
             {
                 query += " left join TagMap tm on tm.EntityId = s.Id";
                 countQuery += " left join TagMap tm on tm.EntityId = s.Id";
+            }
+            
+            if (filterRequest.Filters.ContainsKey("matchTags"))
+            {
+                query += " left join TagMap tmm on tmm.EntityId = m.Id";
+                countQuery += " left join TagMap tmm on tmm.EntityId = m.Id";
             }
             
             var whereQueryParts = new List<string>()

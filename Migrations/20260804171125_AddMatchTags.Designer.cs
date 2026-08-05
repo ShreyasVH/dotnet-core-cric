@@ -4,6 +4,7 @@ using Com.Dotnet.Cric.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace dotnet.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260804171125_AddMatchTags")]
+    partial class AddMatchTags
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -653,7 +656,6 @@ namespace dotnet.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Type")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -676,6 +678,11 @@ namespace dotnet.Migrations
                     b.Property<int>("EntityId")
                         .HasColumnType("int");
 
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<int>("TagId")
                         .HasColumnType("int");
 
@@ -684,7 +691,7 @@ namespace dotnet.Migrations
                     b.HasIndex("TagId")
                         .HasDatabaseName("Tag");
 
-                    b.HasIndex("EntityId", "TagId")
+                    b.HasIndex("EntityType", "EntityId", "TagId")
                         .IsUnique();
 
                     b.ToTable("TagMap");

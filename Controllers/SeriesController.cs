@@ -127,7 +127,7 @@ namespace Com.Dotnet.Cric.Controllers
                 _dbContext.SaveChanges();
                 seriesTeamsMapService.Add(series.Id, createRequest.Teams);
                 _manOfTheSeriesService.Add(series.Id, manOfTheSeriesToAdd);
-                _tagMapService.Add(TagEntityType.SERIES.ToString(), series.Id, createRequest.Tags);
+                _tagMapService.Add(series.Id, createRequest.Tags);
 
                 _dbContext.SaveChanges();
                 transaction.Commit();
