@@ -479,9 +479,11 @@ namespace Com.Dotnet.Cric.Controllers
                 );
             }).ToList();
             
-            var tagMaps = _tagMapService.Get(TagEntityType.MATCH.ToString(), id);
+            var matchTags = _tagsService.FindByType(nameof(TagEntityType.MATCH));
+            var matchTagIds = matchTags.Select(t => t.Id).ToList();
+            var tagMaps = _tagMapService.Get(id, matchTagIds);
             var tagIds = tagMaps.Select(tm => tm.TagId).ToList();
-            var tags = _tagsService.FindByIds(tagIds);
+            var tags = matchTags.Where(t => tagIds.Contains(t.Id)).ToList();
 
             var matchResponse = new MatchResponse(
                 match,

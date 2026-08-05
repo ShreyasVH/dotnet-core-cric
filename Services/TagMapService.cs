@@ -18,11 +18,6 @@ namespace Com.Dotnet.Cric.Services
             tagMapRepository.Add(entityType, entityId, tagIds);
         }
         
-        public List<TagMap> Get(string entityType, int entityId)
-        {
-            return tagMapRepository.Get(entityType, entityId);
-        }
-        
         public void Remove(string entityType, int entityId)
         {
             tagMapRepository.Remove(entityType, entityId);
