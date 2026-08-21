@@ -24,5 +24,18 @@ namespace Com.Dotnet.Cric.Repositories
             //_dbContext.SaveChanges();
             return partnerships;
         }
+
+        private List<Partnership> GetByMatchPlayerIdsAll(List<int> matchPlayerIds)
+        {
+            return _dbContext.Partnerships
+                .Where(p => matchPlayerIds.Contains(p.MatchPlayerId1) || matchPlayerIds.Contains(p.MatchPlayerId2))
+                .ToList();
+        }
+        
+        public void Remove(List<int> matchPlayerIds)
+        {
+            _dbContext.Partnerships.RemoveRange(GetByMatchPlayerIdsAll(matchPlayerIds));
+            _dbContext.SaveChanges();
+        }
     }
 }

@@ -17,5 +17,10 @@ namespace Com.Dotnet.Cric.Services
         {
             return _partnershipRepository.Add(partnershipRequests, playerToMatchPlayerMap);
         }
+        
+        public void Remove(List<int> matchPlayerIds)
+        {
+            _partnershipRepository.Remove(matchPlayerIds);
+        }
     }
 }

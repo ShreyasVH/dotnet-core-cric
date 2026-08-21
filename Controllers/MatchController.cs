@@ -535,6 +535,7 @@ namespace Com.Dotnet.Cric.Controllers
                 _fielderDismissalService.Remove(matchPlayerIds);
                 _battingScoreService.Remove(matchPlayerIds);
                 _bowlingFigureService.Remove(matchPlayerIds);
+                _partnershipService.Remove(matchPlayerIds);
                 _matchPlayerMapService.Remove(id);
                 _totalsService.Remove(id);
                 _matchService.Remove(id);
