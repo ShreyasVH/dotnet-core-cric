@@ -22,5 +22,10 @@ namespace Com.Dotnet.Cric.Services
         {
             _partnershipRepository.Remove(matchPlayerIds);
         }
+
+        public List<Partnership> Get(List<int> matchPlayerIds)
+        {
+            return _partnershipRepository.GetByMatchPlayerIds(matchPlayerIds);
+        }
     }
 }
