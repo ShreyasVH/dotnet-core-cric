@@ -48,6 +48,8 @@ namespace Com.Dotnet.Cric.Data
         public DbSet<Tag> Tags { get; set; }
         
         public DbSet<TagMap> TagMap { get; set; }
+        
+        public DbSet<Partnership> Partnerships { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -567,6 +569,25 @@ namespace Com.Dotnet.Cric.Data
             modelBuilder.Entity<TagMap>()
                 .HasIndex(t => t.TagId)
                 .HasDatabaseName("Tag");
+            
+            modelBuilder.Entity<Partnership>()
+                .HasIndex(p => new { p.MatchPlayerId1, p.MatchPlayerId2, p.Innings, p.Wicket })
+                .HasDatabaseName("UK_P_Players_Innings_Wicket")
+                .IsUnique();
+            
+            modelBuilder.Entity<Partnership>()
+                .HasOne(p => p.MatchPlayerMap1)
+                .WithMany()
+                .HasForeignKey(p => p.MatchPlayerId1)
+                .HasConstraintName("FK_BF_Match_Player_1")
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Partnership>()
+                .HasOne(p => p.MatchPlayerMap2)
+                .WithMany()
+                .HasForeignKey(p => p.MatchPlayerId2)
+                .HasConstraintName("FK_BF_Match_Player_2")
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
