@@ -40,9 +40,10 @@ namespace Com.Dotnet.Cric.Controllers
         private readonly TotalsService _totalsService;
         private readonly TagMapService _tagMapService;
         private readonly TagsService _tagsService;
+        private readonly PartnershipService _partnershipService;
         private readonly AppDbContext _dbContext;
 
-        public MatchController(MatchService matchService, SeriesService seriesService, TeamService teamService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, StadiumService stadiumService, TeamTypeService teamTypeService, CountryService countryService, MatchPlayerMapService matchPlayerMapService, PlayerService playerService, BattingScoreService battingScoreService, DismissalModeService dismissalModeService, BowlingFigureService bowlingFigureService, FielderDismissalService fielderDismissalService, ExtrasTypeService extrasTypeService, ExtrasService extrasService, CaptainService captainService, WicketKeeperService wicketKeeperService, ManOfTheMatchService manOfTheMatchService, GameTypeService gameTypeService, TotalsService totalsService, TagMapService tagMapService, TagsService tagsService, AppDbContext dbContext)
+        public MatchController(MatchService matchService, SeriesService seriesService, TeamService teamService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, StadiumService stadiumService, TeamTypeService teamTypeService, CountryService countryService, MatchPlayerMapService matchPlayerMapService, PlayerService playerService, BattingScoreService battingScoreService, DismissalModeService dismissalModeService, BowlingFigureService bowlingFigureService, FielderDismissalService fielderDismissalService, ExtrasTypeService extrasTypeService, ExtrasService extrasService, CaptainService captainService, WicketKeeperService wicketKeeperService, ManOfTheMatchService manOfTheMatchService, GameTypeService gameTypeService, TotalsService totalsService, TagMapService tagMapService, TagsService tagsService, PartnershipService partnershipService, AppDbContext dbContext)
         {
             _matchService = matchService;
             _seriesService = seriesService;
@@ -67,6 +68,7 @@ namespace Com.Dotnet.Cric.Controllers
             _totalsService = totalsService;
             _tagMapService = tagMapService;
             _tagsService = tagsService;
+            _partnershipService = partnershipService;
             _dbContext = dbContext;
         }
 
@@ -165,6 +167,7 @@ namespace Com.Dotnet.Cric.Controllers
             var battingScoreResponses = new List<BattingScoreResponse>();
             var bowlingFigureResponses = new List<BowlingFigureResponse>();
             var extrasResponses = new List<ExtrasResponse>();
+            var partnershipResponses = new List<PartnershipResponse>();
 
             using (var transaction = _dbContext.Database.BeginTransaction())
             {
@@ -257,6 +260,23 @@ namespace Com.Dotnet.Cric.Controllers
                 _manOfTheMatchService.Add(createRequest.ManOfTheMatchList, playerToMatchPlayerMap);
                 _totalsService.Add(createRequest.Totals.Select(t => new Total(match.Id, t)).ToList());
                 _tagMapService.Add(match.Id, createRequest.Tags);
+                var partnerships = _partnershipService.Add(createRequest.Partnerships, playerToMatchPlayerMap);
+                var partnershipMap =  partnerships.ToDictionary(p => p.MatchPlayerId1 + "_" + p.MatchPlayerId2 + "_" + p.Innings + "_" + p.Wicket, p => p);
+
+                partnershipResponses = createRequest.Partnerships.Select(partnershipRequest =>
+                {
+                    var key = playerToMatchPlayerMap[partnershipRequest.PlayerId1] + "_" + playerToMatchPlayerMap[partnershipRequest.PlayerId2] + "_" + partnershipRequest.Innings + "_" + partnershipRequest.Wicket;
+                    var partnership = partnershipMap[key];
+                    
+                    var player1 = playerMap[partnershipRequest.PlayerId1];
+                    var player2 = playerMap[partnershipRequest.PlayerId2];
+
+                    return new PartnershipResponse(
+                        partnership,
+                        new PlayerMiniResponse(player1, new CountryResponse(countryMap[player1.CountryId])),
+                        new PlayerMiniResponse(player2, new CountryResponse(countryMap[player2.CountryId]))
+                    );
+                }).ToList();
 
                 _dbContext.SaveChanges();
                 
@@ -292,7 +312,8 @@ namespace Com.Dotnet.Cric.Controllers
                 createRequest.ManOfTheMatchList,
                 createRequest.Captains,
                 createRequest.WicketKeepers,
-                tags
+                tags,
+                partnershipResponses
             );
 
             return Created("", new Response(matchResponse));
@@ -485,6 +506,19 @@ namespace Com.Dotnet.Cric.Controllers
             var tagIds = tagMaps.Select(tm => tm.TagId).ToList();
             var tags = matchTags.Where(t => tagIds.Contains(t.Id)).ToList();
 
+            var partnerships = _partnershipService.Get(matchPlayerIds);
+            var partnershipResponses = partnerships.Select(partnership =>
+            {
+                var player1 = playerMap[matchPlayerToPlayerMap[partnership.MatchPlayerId1]];
+                var player2 = playerMap[matchPlayerToPlayerMap[partnership.MatchPlayerId2]];
+
+                return new PartnershipResponse(
+                    partnership,
+                    player1,
+                    player2
+                );
+            }).ToList();
+
             var matchResponse = new MatchResponse(
                 match,
                 series,
@@ -501,7 +535,8 @@ namespace Com.Dotnet.Cric.Controllers
                 manOfTheMatchList.Select(motm => matchPlayerToPlayerMap[motm.MatchPlayerId]).ToList(),
                 captains.Select(c => matchPlayerToPlayerMap[c.MatchPlayerId]).ToList(),
                 wicketKeepers.Select(wk => matchPlayerToPlayerMap[wk.MatchPlayerId]).ToList(),
-                tags
+                tags,
+                partnershipResponses
             );
 
             return Ok(new Response(matchResponse));
@@ -532,6 +567,7 @@ namespace Com.Dotnet.Cric.Controllers
                 _fielderDismissalService.Remove(matchPlayerIds);
                 _battingScoreService.Remove(matchPlayerIds);
                 _bowlingFigureService.Remove(matchPlayerIds);
+                _partnershipService.Remove(matchPlayerIds);
                 _matchPlayerMapService.Remove(id);
                 _totalsService.Remove(id);
                 _matchService.Remove(id);
