@@ -50,6 +50,8 @@ namespace Com.Dotnet.Cric.Data
         public DbSet<TagMap> TagMap { get; set; }
         
         public DbSet<Partnership> Partnerships { get; set; }
+        
+        public DbSet<BallwiseDetail> BallwiseDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -588,6 +590,33 @@ namespace Com.Dotnet.Cric.Data
                 .HasForeignKey(p => p.MatchPlayerId2)
                 .HasConstraintName("FK_BF_Match_Player_2")
                 .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<BallwiseDetail>()
+                .HasIndex(bd => new { bd.BowlerMatchPlayerId, bd.Timestamp })
+                .HasDatabaseName("UK_BD_Timestamp")
+                .IsUnique();
+            
+            modelBuilder.Entity<BallwiseDetail>()
+                .HasOne(bd => bd.BatsmanMatchPlayer)
+                .WithMany()
+                .HasForeignKey(bd => bd.BatsmanMatchPlayerId)
+                .HasConstraintName("FK_BD_Batsman")
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<BallwiseDetail>()
+                .HasOne(bd => bd.BowlerMatchPlayer)
+                .WithMany()
+                .HasForeignKey(bd => bd.BowlerMatchPlayerId)
+                .HasConstraintName("FK_BD_Bowler")
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<BallwiseDetail>()
+                .HasIndex(bd => bd.BatsmanMatchPlayerId)
+                .HasDatabaseName("IDX_BallwiseDetails_Batsman");
+            
+            modelBuilder.Entity<BallwiseDetail>()
+                .HasIndex(bd => bd.BowlerMatchPlayerId)
+                .HasDatabaseName("IDX_BallwiseDetails_Bowler");
         }
     }
 }

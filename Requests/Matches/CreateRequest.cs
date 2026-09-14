@@ -29,6 +29,7 @@ namespace Com.Dotnet.Cric.Requests.Matches
         public List<TotalRequestEntry> Totals { get; set; }
         public List<int> Tags { get; set; }
         public List<PartnershipRequest> Partnerships { get; set; }
+        public List<BallwiseDetailRequest> BallwiseDetails { get; set; }
 
         public void Validate()
         {

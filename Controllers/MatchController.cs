@@ -41,9 +41,10 @@ namespace Com.Dotnet.Cric.Controllers
         private readonly TagMapService _tagMapService;
         private readonly TagsService _tagsService;
         private readonly PartnershipService _partnershipService;
+        private readonly BallwiseDetailService _ballwiseDetailService;
         private readonly AppDbContext _dbContext;
 
-        public MatchController(MatchService matchService, SeriesService seriesService, TeamService teamService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, StadiumService stadiumService, TeamTypeService teamTypeService, CountryService countryService, MatchPlayerMapService matchPlayerMapService, PlayerService playerService, BattingScoreService battingScoreService, DismissalModeService dismissalModeService, BowlingFigureService bowlingFigureService, FielderDismissalService fielderDismissalService, ExtrasTypeService extrasTypeService, ExtrasService extrasService, CaptainService captainService, WicketKeeperService wicketKeeperService, ManOfTheMatchService manOfTheMatchService, GameTypeService gameTypeService, TotalsService totalsService, TagMapService tagMapService, TagsService tagsService, PartnershipService partnershipService, AppDbContext dbContext)
+        public MatchController(MatchService matchService, SeriesService seriesService, TeamService teamService, ResultTypeService resultTypeService, WinMarginTypeService winMarginTypeService, StadiumService stadiumService, TeamTypeService teamTypeService, CountryService countryService, MatchPlayerMapService matchPlayerMapService, PlayerService playerService, BattingScoreService battingScoreService, DismissalModeService dismissalModeService, BowlingFigureService bowlingFigureService, FielderDismissalService fielderDismissalService, ExtrasTypeService extrasTypeService, ExtrasService extrasService, CaptainService captainService, WicketKeeperService wicketKeeperService, ManOfTheMatchService manOfTheMatchService, GameTypeService gameTypeService, TotalsService totalsService, TagMapService tagMapService, TagsService tagsService, PartnershipService partnershipService, BallwiseDetailService ballwiseDetailService, AppDbContext dbContext)
         {
             _matchService = matchService;
             _seriesService = seriesService;
@@ -69,6 +70,7 @@ namespace Com.Dotnet.Cric.Controllers
             _tagMapService = tagMapService;
             _tagsService = tagsService;
             _partnershipService = partnershipService;
+            _ballwiseDetailService = ballwiseDetailService;
             _dbContext = dbContext;
         }
 
@@ -277,6 +279,8 @@ namespace Com.Dotnet.Cric.Controllers
                         new PlayerMiniResponse(player2, new CountryResponse(countryMap[player2.CountryId]))
                     );
                 }).ToList();
+                
+                _ballwiseDetailService.Add(createRequest.BallwiseDetails, playerToMatchPlayerMap);
 
                 _dbContext.SaveChanges();
                 
