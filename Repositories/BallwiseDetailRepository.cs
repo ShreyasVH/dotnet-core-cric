@@ -23,13 +23,13 @@ namespace Com.Dotnet.Cric.Repositories
             return ballwiseDetailsList;
         }
 
-        // private List<Partnership> GetByMatchPlayerIdsAll(List<int> matchPlayerIds)
-        // {
-        //     return _dbContext.Partnerships
-        //         .Where(p => matchPlayerIds.Contains(p.MatchPlayerId1) || matchPlayerIds.Contains(p.MatchPlayerId2))
-        //         .ToList();
-        // }
-        //
+        private List<BallwiseDetail> GetByMatchPlayerIdsAll(List<int> matchPlayerIds)
+        {
+            return _dbContext.BallwiseDetails
+                .Where(bd => matchPlayerIds.Contains(bd.BatsmanMatchPlayerId) || matchPlayerIds.Contains(bd.BowlerMatchPlayerId))
+                .ToList();
+        }
+        
         // public List<Partnership> GetByMatchPlayerIds(List<int> matchPlayerIds)
         // {
         //     return _dbContext.Partnerships
@@ -37,11 +37,11 @@ namespace Com.Dotnet.Cric.Repositories
         //         .Where(p => p.PrimaryEntry)
         //         .ToList();
         // }
-        //
-        // public void Remove(List<int> matchPlayerIds)
-        // {
-        //     _dbContext.Partnerships.RemoveRange(GetByMatchPlayerIdsAll(matchPlayerIds));
-        //     _dbContext.SaveChanges();
-        // }
+        
+        public void Remove(List<int> matchPlayerIds)
+        {
+            _dbContext.BallwiseDetails.RemoveRange(GetByMatchPlayerIdsAll(matchPlayerIds));
+            _dbContext.SaveChanges();
+        }
     }
 }

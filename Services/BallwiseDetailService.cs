@@ -18,10 +18,10 @@ namespace Com.Dotnet.Cric.Services
             return _ballwiseDetailRepository.Add(ballwiseDetailRequests, playerToMatchPlayerMap);
         }
         
-        // public void Remove(List<int> matchPlayerIds)
-        // {
-        //     _partnershipRepository.Remove(matchPlayerIds);
-        // }
+        public void Remove(List<int> matchPlayerIds)
+        {
+            _ballwiseDetailRepository.Remove(matchPlayerIds);
+        }
         //
         // public List<Partnership> Get(List<int> matchPlayerIds)
         // {
