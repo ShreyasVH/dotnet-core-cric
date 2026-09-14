@@ -8,3 +8,4 @@ compile.log
 server.log
 migrations.log
 Folder.DotSettings.user
+upgradeLog.txt
